@@ -67,3 +67,4 @@ http://www.brynosaurus.com/pub/net/p2pnat/
 pi@babypi:~/Tree $ sudo python server-pi.py 10001
 pi@babypi:~/Tree $ ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10001
 pi@papapi:~/Tree $ sudo python client.py 1.tcp.eu.ngrok.io 21351
+
