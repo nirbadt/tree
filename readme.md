@@ -2,7 +2,6 @@
 ### Done
 	* client<->server communication
 	* sensing improvements
-
 ### D
 	* Cleanup and commit to git
 	* make it locally testable
