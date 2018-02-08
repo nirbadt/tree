@@ -1,18 +1,19 @@
 ### TODO
 Done
-	[x] client<->server communication
-	[x] sensing improvements
+	* client<->server communication
+	* sensing improvements
 
 D
-	[ ] Cleanup and commit to git
-	[ ] make it locally testable
-	[ ] client/server python cleanup
-	[ ] client/server agnostic auto-discovery
+	* Cleanup and commit to git
+	* make it locally testable
+	* client/server python cleanup
+	* client/server agnostic auto-discovery
 N
-	[ ] Play implementation
+	* Play implementation
+
 Integration
-	[ ] Activate strip code
-	[ ] 
+	* Activate strip code
+	 
 
 ## Setup
 1) Install the os when prompted
