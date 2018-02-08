@@ -1,17 +1,17 @@
-### TODO
-Done
+## TODO
+### Done
 	* client<->server communication
 	* sensing improvements
 
-D
+### D
 	* Cleanup and commit to git
 	* make it locally testable
 	* client/server python cleanup
 	* client/server agnostic auto-discovery
-N
+### N
 	* Play implementation
 
-Integration
+### Integration
 	* Activate strip code
 	 
 
@@ -52,20 +52,19 @@ https://learn.adafruit.com/mpr121-capacitive-touch-sensor-on-raspberry-pi-and-be
 https://github.com/adafruit/Adafruit_Python_MPR121
 
 
-
 ## Repos
 https://github.com/Yahavw/shula
 https://github.com/Yahavw/shula/blob/master/rpi/rpi_config.json
 
-
+## Resources
 http://www.giantflyingsaucer.com/blog/?p=4967
 http://learning-0mq-with-pyzmq.readthedocs.io/en/latest/pyzmq/patterns/pubsub.html
 
 http://www.brynosaurus.com/pub/net/p2pnat/
 
 
+## Log
 ### 8/2/2018
 pi@babypi:~/Tree $ sudo python server-pi.py 10001
 pi@babypi:~/Tree $ ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10001
-
 pi@papapi:~/Tree $ sudo python client.py 1.tcp.eu.ngrok.io 21351
