@@ -29,19 +29,19 @@ Integration
 6) Libraries
 	
 7) download and install ngrok
-	[ ] linux, arm -> wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
-	[ ] unzip ngrok-stable-linux-arm.zip
-	[ ] sudo mv ./ngrok /usr/local/bin/
-	[ ] ngrok authtoken TOKEN
-	[ ] ngrok http 80
-	[ ] ngrok tcp 20 -> ssh pi@0.tcp.ngrok.io -oPort=16865
-	[ ] ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
-	[ ] ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21352 10000
+	* linux, arm -> wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+	* unzip ngrok-stable-linux-arm.zip
+	* sudo mv ./ngrok /usr/local/bin/
+	* ngrok authtoken TOKEN
+	* ngrok http 80
+	* ngrok tcp 20 -> ssh pi@0.tcp.ngrok.io -oPort=16865
+	* ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
+	* ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21352 10000
 
 8) Capasitive
-	[ ] connect a banaba
-	[ ] run ~/Adafruit_Python_MPR121/examples $ sudo python simpletest.py
-	[ ] touch banana
+	* connect a banaba
+	* run ~/Adafruit_Python_MPR121/examples $ sudo python simpletest.py
+	* touch banana
 
 ## Capacitive Touch MPR121
 Seems like what we need, 12 inputs, threshold can be set.
