@@ -1,18 +1,18 @@
 ### TODO
-	Done
-		[x] client<->server communication
-		[x] sensing improvements
+Done
+	[x] client<->server communication
+	[x] sensing improvements
 
-	D
-		[ ] Cleanup and commit to git
-		[ ] make it locally testable
-		[ ] client/server python cleanup
-		[ ] client/server agnostic auto-discovery
-	N
-		[ ] Play implementation
-	Integration
-		[ ] Activate strip code
-		[ ] 
+D
+	[ ] Cleanup and commit to git
+	[ ] make it locally testable
+	[ ] client/server python cleanup
+	[ ] client/server agnostic auto-discovery
+N
+	[ ] Play implementation
+Integration
+	[ ] Activate strip code
+	[ ] 
 
 ## Setup
 1) Install the os when prompted
@@ -28,19 +28,20 @@
 	sudo apt-get install socat
 6) Libraries
 	
-6) download and install ngrok
-	a) linux, arm -> wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
-	b) unzip ngrok-stable-linux-arm.zip
-	c) sudo mv ./ngrok /usr/local/bin/
-	d) ngrok authtoken TOKEN
-	e) ngrok http 80
-	f) ngrok tcp 20 -> ssh pi@0.tcp.ngrok.io -oPort=16865
-		ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
-		ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21352 10000
-7) Capasitive
-	a) connect a banaba
-	b) run ~/Adafruit_Python_MPR121/examples $ sudo python simpletest.py
-	c) touch banana
+7) download and install ngrok
+	[ ] linux, arm -> wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
+	[ ] unzip ngrok-stable-linux-arm.zip
+	[ ] sudo mv ./ngrok /usr/local/bin/
+	[ ] ngrok authtoken TOKEN
+	[ ] ngrok http 80
+	[ ] ngrok tcp 20 -> ssh pi@0.tcp.ngrok.io -oPort=16865
+	[ ] ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
+	[ ] ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21352 10000
+
+8) Capasitive
+	[ ] connect a banaba
+	[ ] run ~/Adafruit_Python_MPR121/examples $ sudo python simpletest.py
+	[ ] touch banana
 
 ## Capacitive Touch MPR121
 Seems like what we need, 12 inputs, threshold can be set.
