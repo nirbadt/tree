@@ -1,17 +1,6 @@
 ## TODO
-### Done
-	* client<->server communication
-	* sensing improvements
-### D
-	* Cleanup and commit to git
 	* make it locally testable
-	* client/server python cleanup
-	* client/server agnostic auto-discovery
-### N
-	* Play implementation
-
-### Integration
-	* Activate strip code
+	* client/server unification and agnostic auto-discovery
 	 
 
 ## Setup
@@ -55,6 +44,12 @@ https://github.com/adafruit/Adafruit_Python_MPR121
 https://github.com/Yahavw/shula
 https://github.com/Yahavw/shula/blob/master/rpi/rpi_config.json
 
+## Disable soundcard
+```
+sudo vi /etc/modprobe.d/alsa-blacklist.conf
+blacklist snd_bcm2835
+```
+
 ## Resources
 http://www.giantflyingsaucer.com/blog/?p=4967
 http://learning-0mq-with-pyzmq.readthedocs.io/en/latest/pyzmq/patterns/pubsub.html
@@ -68,3 +63,4 @@ pi@babypi:~/Tree $ sudo python server-pi.py 10001
 pi@babypi:~/Tree $ ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10001
 pi@papapi:~/Tree $ sudo python client.py 1.tcp.eu.ngrok.io 21351
 
+### 5/3/2018
