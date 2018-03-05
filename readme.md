@@ -3,6 +3,26 @@
 	* client/server unification and agnostic auto-discovery
 	 
 
+## Startup
+### Papa - server
+```
+# Terminal 1
+ssh pi@PAPA-IP
+ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
+
+# Trerminal 2
+ssh pi@PAPA-IP
+cd Tree
+sudo python server.py 10000
+```
+
+### Baby - client
+```
+ssh pi@BABY-IP
+cd Tree
+sudo python client.py 1.tcp.eu.ngrok.io 21351
+```
+
 ## Setup
 1) Install the os when prompted
 2) Preferences -> Enable SSH
