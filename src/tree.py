@@ -18,7 +18,7 @@ def init_sensor():
 
 def init_strip():
 	# LED strip configuration:
-	LED_COUNT      = 8      # Number of LED pixels.
+	LED_COUNT      = 20      # Number of LED pixels.
 	LED_PIN        = 18      # GPIO pin connected to the pixels (18 uses PWM!).
 	#LED_PIN        = 10      # GPIO pin connected to the pixels (10 uses SPI /dev/spidev0.0).
 	LED_FREQ_HZ    = 800000  # LED signal frequency in hertz (usually 800khz)
@@ -75,74 +75,50 @@ def sensor_bar(sensor_data, index):
 	return (sensor_data >> index) & 0x1
 
 
-def play(last_local_sensor, current_local_sensor, last_remote_sensor, current_remote_sensor, strip):
-	print "PLAY: %d %d %d %d" % (last_local_sensor, current_local_sensor, last_remote_sensor, current_remote_sensor)
-	for i in range(8):
-		pin_bit = 1 << i
-		local_touched = current_local_sensor & pin_bit and not last_local_sensor & pin_bit
-		local_released = not current_local_sensor & pin_bit and last_local_sensor & pin_bit;
-		remote_touched = current_remote_sensor & pin_bit and not last_remote_sensor & pin_bit
-		remote_released = not current_remote_sensor & pin_bit and last_remote_sensor & pin_bit;
-
-		if (i == 0):
-			if (local_touched):
-				print "Fruit 1: local_touched" 
-				strip.setPixelColor(0, Color(255,0,0))
-				strip.setPixelColor(1, Color(255,0,0))
-				strip.setPixelColor(2, Color(255,0,0))
-				strip.setPixelColor(3, Color(255,0,0))
-				strip.setPixelColor(4, Color(255,0,0))
-				strip.setPixelColor(5, Color(255,0,0))
-				strip.setPixelColor(6, Color(255,0,0))
-				strip.setPixelColor(7, Color(255,0,0))
-
-			if (local_released):
-				print "Fruit 1: local_released"
-				strip.setPixelColor(0, Color(0,0,0))
-				strip.setPixelColor(1, Color(0,0,0))
-				strip.setPixelColor(2, Color(0,0,0))
-				strip.setPixelColor(3, Color(0,0,0))
-				strip.setPixelColor(4, Color(0,0,0))
-				strip.setPixelColor(5, Color(0,0,0))
-				strip.setPixelColor(6, Color(0,0,0))
-				strip.setPixelColor(7, Color(0,0,0))
-
-
-
-		# if (local_touched or remote_touched):
-		# 	strip.setPixelColor(i, 255)
-		# elif (local_released or remote_released):
-		# 	strip.setPixelColor(i, 0)
-	
-	strip.show()
-
-	# DO ACTION for bit i
-
-	# for transitions, do this
-	#if local_touched:
-	#	play_local(i)
-
-	# dont do this -> if (local_touched and remote_touched)
-	# do this below
-	#if ((current_local_sensor & pin_bit) && (current_remote_sensor & pin_bit)):
-	#	play_magic();
-
-
 def handle_loop(connection, sensor, strip):
 	last_local_sensor = read_local_sensor(sensor)
 	last_remote_sensor = 0
 
 	while True:
-		current_local_sensor = read_local_sensor(sensor)
-		print >>sys.stderr, 'local  sensor: %s' % hex(current_local_sensor)
-		
-		send_sensor_data_to_remote(connection, current_local_sensor)
-		
-		current_remote_sensor = read_remote_sensor(connection)
-		print >>sys.stderr, 'remote sensor: %s' % hex(current_remote_sensor)
 
-		play(last_local_sensor, current_local_sensor, last_remote_sensor, current_remote_sensor, strip)
+		for j in range(1, 8):
 
-		last_local_sensor = current_local_sensor
-		last_remote_sensor = current_remote_sensor
-		time.sleep(0.2)
+			current_local_sensor = read_local_sensor(sensor)
+			print >>sys.stderr, 'local  sensor: %s' % hex(current_local_sensor)
+			
+			send_sensor_data_to_remote(connection, current_local_sensor)
+			
+			current_remote_sensor = read_remote_sensor(connection)
+			print >>sys.stderr, 'remote sensor: %s' % hex(current_remote_sensor)
+
+			############################################
+
+			print "PLAY: %d %d %d %d" % (last_local_sensor, current_local_sensor, last_remote_sensor, current_remote_sensor)
+			for i in range(5):
+				pin_bit = 1 << i
+				local_touched = current_local_sensor & pin_bit and not last_local_sensor & pin_bit
+				local_released = not current_local_sensor & pin_bit and last_local_sensor & pin_bit;
+				remote_touched = current_remote_sensor & pin_bit and not last_remote_sensor & pin_bit
+				remote_released = not current_remote_sensor & pin_bit and last_remote_sensor & pin_bit;
+
+				if local_touched or remote_touched:
+					print('{0} touched!'.format(i))
+					strip.setPixelColor(0,Color(0,0,255))
+					Energy = strip.getPixelColor(j-1)
+					strip.setPixelColor(j, Energy)
+					strip.show()
+
+				if local_released or remote_released:
+					print('{0} released!'.format(i))
+					strip.setPixelColor(0,Color(0,0,0))
+					Energy = strip.getPixelColor(j-1)
+					strip.setPixelColor(j, Energy)
+					strip.show()
+				
+				Energy = strip.getPixelColor(j-1)
+				strip.setPixelColor(j, Energy)
+				strip.show()
+				time.sleep(0.005)
+
+			last_local_sensor = current_local_sensor
+			last_remote_sensor = current_remote_sensor
