@@ -104,20 +104,15 @@ def handle_loop(connection, sensor, strip):
 				if local_touched or remote_touched:
 					print('{0} touched!'.format(i))
 					strip.setPixelColor(0,Color(0,0,255))
-					Energy = strip.getPixelColor(j-1)
-					strip.setPixelColor(j, Energy)
-					strip.show()
-
-				if local_released or remote_released:
+				
+				elif local_released or remote_released:
 					print('{0} released!'.format(i))
 					strip.setPixelColor(0,Color(0,0,0))
-					Energy = strip.getPixelColor(j-1)
-					strip.setPixelColor(j, Energy)
-					strip.show()
-				
+
 				Energy = strip.getPixelColor(j-1)
 				strip.setPixelColor(j, Energy)
 				strip.show()
+
 				time.sleep(0.005)
 
 			last_local_sensor = current_local_sensor
