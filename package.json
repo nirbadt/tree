@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "sudo /home/pi/n/bin/node index.js"
   },
   "repository": {
     "type": "git",
