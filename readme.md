@@ -29,12 +29,14 @@ sudo python client.py 1.tcp.eu.ngrok.io 21351
 3) Login, user `pi`, password `raspberry`
 4) ssh pi@192.168.1.104 (babypi)
 5) soft
-	sudo apt-get update
-	sudo apt-get install p7zip-full
-	sudo apt-get install apache2 -y
-	sudo apt-get install -y git
-	sudo apt-get install python-twisted
-	sudo apt-get install socat
+```bash
+	sudo apt-get update 
+	sudo apt-get install p7zip-full 
+	sudo apt-get install apache2 -y 
+	sudo apt-get install -y git 
+	sudo apt-get install python-twisted 
+	sudo apt-get install socat 
+```
 6) Libraries
 	
 7) download and install ngrok
