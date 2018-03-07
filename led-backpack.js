@@ -12,6 +12,7 @@ board.on("ready", function() {
     });
 
     strip.on("ready", function() {
+        console.log('strip ready')
         // do stuff with the strip here.
         strip.color("#ff0000"); // turns entire strip red using a hex colour
         strip.show();
