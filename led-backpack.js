@@ -4,29 +4,16 @@ var Raspi = require('raspi-io');
 var board = new five.Board({
   io: new Raspi()
 });
-
-var fps = 60;
-
-board.on('ready', function() {
-
-    var strip = new pixel.Strip({
-        address: 0x46,
-        data: 6,
-        length: 5,
+board.on("ready", function() {
+    strip = new pixel.Strip({
         board: this,
-        controller: 'I2CBACKPACK'
+        controller: "I2CBACKPACK",
+        strips: [6], // 3 physical strips on pins 0, 1 & 2 with lengths 4, 6 & 8.
     });
 
-    strip.on('ready', function() {
-
-        var colors = ['magenta', 'blue']
-
-        var blinker = setInterval(function() {
-            const current = colors.pop()
-            strip.color(current)
-            colors.unshift(current)
-        
-            strip.show()
-        }, 200)
-    });
+    strip.on("ready", function() {
+        // do stuff with the strip here.
+        strip.color("#ff0000"); // turns entire strip red using a hex colour
+        strip.show();
+    });     
 });
