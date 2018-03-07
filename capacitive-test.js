@@ -1,5 +1,8 @@
 var five = require("johnny-five");
-var board = new five.Board();
+var Raspi = require("raspi-io");
+var board = new five.Board({
+  io: new Raspi()
+});
 
 board.on("ready", function() {
   var touchpad = new five.Touchpad({
