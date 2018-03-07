@@ -10,7 +10,7 @@ var fps = 60;
 board.on('ready', function() {
 
     var strip = new pixel.Strip({
-        address: 0x45,
+        address: 0x46,
         data: 6,
         length: 55,
         board: this,
