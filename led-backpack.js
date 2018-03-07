@@ -12,7 +12,7 @@ board.on('ready', function() {
     var strip = new pixel.Strip({
         address: 0x46,
         data: 6,
-        length: 55,
+        length: 5,
         board: this,
         controller: 'I2CBACKPACK'
     });
