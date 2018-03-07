@@ -24,7 +24,7 @@ board.on('ready', function() {
         var blinker = setInterval(function() {
             const current = colors.pop()
             strip.color(current)
-            colors.shift(current)
+            colors.unshift(current)
         
             strip.show()
         }, 200)
