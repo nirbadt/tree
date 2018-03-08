@@ -7,7 +7,8 @@ var board = new five.Board({
 board.on("ready", function() {
     strip = new pixel.Strip({
         board: this,
-        controller: "FIRMATA",
+        address: 0x46,
+        controller: "I2CBACKPACK",
         strips: [6], // 3 physical strips on pins 0, 1 & 2 with lengths 4, 6 & 8.
     });
 
