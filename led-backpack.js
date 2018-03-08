@@ -7,6 +7,7 @@ var board = new five.Board({
 board.on("ready", function() {
     strip = new pixel.Strip({
         board: this,
+        length: 5,
         address: 0x45,
         controller: "I2CBACKPACK",
     });
