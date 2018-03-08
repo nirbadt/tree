@@ -12,8 +12,13 @@ board.on("ready", function() {
         controller: "I2CBACKPACK",
     });
 
-    strip.on("ready", function() {
+    strip.on("ready", () => {
         console.log('strip ready')
+        this.repl.inject({
+            // Allow limited on/off control access to the
+            // Led instance from the REPL.
+           strip
+          });
         // do stuff with the strip here.
         strip.color("#ff0000"); // turns entire strip red using a hex colour
         strip.show();
