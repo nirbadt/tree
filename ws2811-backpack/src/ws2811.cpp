@@ -54,7 +54,7 @@ void process_command(byte argc, byte *argv){
             uint16_t index = (uint16_t)argv[1] + ((uint16_t)argv[2]<<7);
             uint32_t color = (uint32_t)argv[3] + ((uint32_t)argv[4]<<7) +
                 ((uint32_t)argv[5]<<14) + ((uint32_t)argv[6] << 21);
-            uint16_t brightness = (uint16_t)argv[7]
+            uint16_t brightness = (uint16_t)argv[7];
 
             thumb[index] = color;
             
