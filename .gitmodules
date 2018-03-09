@@ -1,3 +1,0 @@
-[submodule "ws2811-backpack/node-pixel"]
-	path = ws2811-backpack/node-pixel
-	url = git@github.com:ajfisher/node-pixel.git
