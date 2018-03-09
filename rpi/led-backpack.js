@@ -1,10 +1,10 @@
 var five = require('johnny-five');
 var pixel = require('node-pixel');
-// var Raspi = require('raspi-io');
+var Raspi = require('raspi-io');
 var board = new five.Board({
-    port: '/dev/tty.wchusbserial14140'
-//   io: new Raspi()
+    io: new Raspi()
 });
+
 board.on('ready', function() {
     strip = new pixel.Strip({
         board: this,
