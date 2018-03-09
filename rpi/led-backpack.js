@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 var five = require('johnny-five');
 var pixel = require('node-pixel');
 var Raspi = require('raspi-io');
@@ -9,7 +11,7 @@ board.on('ready', function() {
     strip = new pixel.Strip({
         board: this,
         length: 5,
-        address: 0x46,
+        address: process.env.I2C_ADDRESS,
         controller: 'I2CBACKPACK',
     });
 
