@@ -1,0 +1,3 @@
+[submodule "backpack/node-pixel"]
+	path = backpack/node-pixel
+	url = git@github.com:ajfisher/node-pixel.git
