@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.osx": {
+        "PATH": "/Users/leon/.platformio/penv/bin:/Users/leon/.platformio/penv:/Users/leon/.rvm/gems/ruby-2.2.9/bin:/Users/leon/.rvm/gems/ruby-2.2.9@global/bin:/Users/leon/.rvm/rubies/ruby-2.2.9/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Users/leon/.rvm/bin",
+        "PLATFORMIO_CALLER": "vscode"
+    }
+}
