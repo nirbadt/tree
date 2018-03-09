@@ -55,7 +55,7 @@ void process_command(byte argc, byte *argv){
             uint32_t color = (uint32_t)argv[3] + ((uint32_t)argv[4]<<7) +
                 ((uint32_t)argv[5]<<14) + ((uint32_t)argv[6] << 21);
 
-            // thumb[index] = CRGB::Red;
+            thumb[index] = color;
             
             Serial.print("Set pixel ");
             Serial.print(index);
