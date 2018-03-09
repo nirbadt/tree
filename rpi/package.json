@@ -21,7 +21,9 @@
     "serialport": "^6.1.1"
   },
   "dependencies": {
+    "dotenv": "^5.0.1",
     "johnny-five": "^0.14.1",
-    "node-pixel": "github:leonfedotov/node-pixel"
+    "node-pixel": "github:leonfedotov/node-pixel",
+    "redis": "^2.8.0"
   }
 }
