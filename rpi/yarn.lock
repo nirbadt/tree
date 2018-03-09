@@ -1016,9 +1016,9 @@ node-abi@^2.2.0:
   dependencies:
     semver "^5.4.1"
 
-node-pixel@^0.9.3:
-  version "0.9.3"
-  resolved "https://registry.yarnpkg.com/node-pixel/-/node-pixel-0.9.3.tgz#005fc7088d8da1dbcebe8663840a2ae05189cfab"
+node-pixel@LeonFedotov/node-pixel:
+  version "0.9.2"
+  resolved "https://codeload.github.com/LeonFedotov/node-pixel/tar.gz/cf38de789487925f6fb913dd4184b5c2abfa9ff8"
   dependencies:
     color-string "^1.4.0"
     firmata "^0.17.0"
