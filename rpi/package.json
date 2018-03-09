@@ -16,9 +16,12 @@
     "url": "https://github.com/nirbadt/tree/issues"
   },
   "homepage": "https://github.com/nirbadt/tree#readme",
+  "optionalDependencies": {
+    "raspi-io": "^8.1.0",
+    "serialport": "^6.1.1"
+  },
   "dependencies": {
     "johnny-five": "^0.14.1",
-    "node-pixel": "^0.9.3",
-    "raspi-io": "^8.1.0"
+    "node-pixel": "^0.9.3"
   }
 }

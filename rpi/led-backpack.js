@@ -1,18 +1,19 @@
 var five = require('johnny-five');
 var pixel = require('node-pixel');
-var Raspi = require('raspi-io');
+// var Raspi = require('raspi-io');
 var board = new five.Board({
-  io: new Raspi()
+    port: '/dev/tty.wchusbserial14140'
+//   io: new Raspi()
 });
-board.on("ready", function() {
+board.on('ready', function() {
     strip = new pixel.Strip({
         board: this,
         length: 5,
         address: 0x45,
-        controller: "I2CBACKPACK",
+        controller: 'I2CBACKPACK',
     });
 
-    strip.on("ready", () => {
+    strip.on('ready', () => {
         console.log('strip ready')
         this.repl.inject({
             // Allow limited on/off control access to the
@@ -20,7 +21,7 @@ board.on("ready", function() {
            strip
           });
         // do stuff with the strip here.
-        strip.color("#ff0000"); // turns entire strip red using a hex colour
+        strip.color('#00ff00'); // turns entire strip red using a hex colour
         strip.show();
     });     
 });
