@@ -21,7 +21,7 @@ board.on('ready', function() {
            strip
           });
         // do stuff with the strip here.
-        strip.color('#00ff00'); // turns entire strip red using a hex colour
+        strip.color('black'); // turns entire strip red using a hex colour
         strip.show();
     });     
 });

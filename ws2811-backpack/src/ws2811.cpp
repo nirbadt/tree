@@ -38,27 +38,33 @@ void process_command(byte argc, byte *argv){
             break;
         }
         case PIXEL_SET_STRIP: {
-            uint32_t strip_color = (uint32_t)argv[1] +
+            CRGB strip_color = CRGB((uint32_t)argv[1] +
                 ((uint32_t)argv[2]<<7) +
                 ((uint32_t)argv[3]<<14) +
-                ((uint32_t)argv[4] << 21);
-            // fill_solid(thumb, NUM_LEDS, CHSV( 224, 187, 255) );
-            // sets the entirety of the strip to one colour
+                ((uint32_t)argv[4] << 21));
+            
+            uint16_t brightness = (uint16_t)argv[5] + ((uint16_t)argv[6]<<7);
+            
+            strip_color.fadeToBlackBy(255-brightness);
             fill_solid(thumb, NUM_LEDS, strip_color);
             Serial.print("Set Strip ");
+            Serial.print(brightness);
+            Serial.print(" ");
             Serial.println(strip_color);
             break;
         }
         case PIXEL_SET_PIXEL: {
             // sets the pixel given by the index to the given colour
             uint16_t index = (uint16_t)argv[1] + ((uint16_t)argv[2]<<7);
-            uint32_t color = (uint32_t)argv[3] + ((uint32_t)argv[4]<<7) +
-                ((uint32_t)argv[5]<<14) + ((uint32_t)argv[6] << 21);
-            uint16_t brightness = (uint16_t)argv[7];
+            CRGB color = CRGB((uint32_t)argv[3] + ((uint32_t)argv[4]<<7) +
+                ((uint32_t)argv[5]<<14) + ((uint32_t)argv[6] << 21));
 
+            uint16_t brightness = (uint16_t)argv[7] + ((uint16_t)argv[8]<<7);
+            color.fadeToBlackBy(255-brightness);
             thumb[index] = color;
-            
             Serial.print("Set pixel ");
+            Serial.print(brightness);
+            Serial.print(" ");
             Serial.print(index);
             Serial.print(" ");
             Serial.println(color);
