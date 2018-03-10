@@ -11,7 +11,7 @@ board.on('ready', function() {
     strip = new pixel.Strip({
         board: this,
         length: 5,
-        address: process.env.I2C_ADDRESS,
+        address: parseInt(process.env.I2C_ADDRESS, 16),
         controller: 'I2CBACKPACK',
     });
 
