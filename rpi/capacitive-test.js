@@ -12,6 +12,7 @@ board.on("ready", function() {
   ["change", "press", "hold", "release"].forEach(function(eventType) {
     touchpad.on(eventType, function(event) {
       console.log("Event: %s, Target: %s", eventType, event.which);
+      console.log(event);
     });
   });
 });
