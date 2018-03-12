@@ -15,3 +15,4 @@
 
 #define I2C_ADDR  0x45
 #define MAX_RECEIVED_BYTES  16
+
