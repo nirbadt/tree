@@ -16,9 +16,9 @@ board.on('ready', () => {
     touchpad.on('release', ({which}) => console.log(which))
 
     var write = (message) => {
-        board.io.i2cWrite(0x45, message)//Array.from(message, c => c.charCodeAt(0)));
+        board.io.i2cWrite(0x45, Array.from(message, c => c.charCodeAt(0)));
     };
     board.io.i2cConfig({address: 0x45});
-    write([0x06]);
+    //write([0x06]);
     this.repl.inject({ write });
 });
