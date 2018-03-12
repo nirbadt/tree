@@ -6,7 +6,7 @@ var board = new five.Board({
     io: new Raspi()
 });
 
-board.on('ready', () => {
+board.on('ready', function() {
     
     const touchpad = new five.Touchpad({ controller: 'MPR121' })
     
@@ -16,9 +16,9 @@ board.on('ready', () => {
     touchpad.on('release', ({which}) => console.log(which))
 
     var write = (message) => {
-        board.io.i2cWrite(0x45, Array.from(message, c => c.charCodeAt(0)));
+        this.io.i2cWrite(0x45, Array.from(message, c => c.charCodeAt(0)));
     };
-    board.io.i2cConfig({address: 0x45});
+    this.io.i2cConfig({address: 0x45});
     //write([0x06]);
     this.repl.inject({ write });
 });
