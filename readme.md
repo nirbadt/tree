@@ -1,3 +1,6 @@
+
+
+
 ## TODO
 	* make it locally testable
 	* client/server unification and agnostic auto-discovery
@@ -86,3 +89,10 @@ pi@babypi:~/Tree $ ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 1
 pi@papapi:~/Tree $ sudo python client.py 1.tcp.eu.ngrok.io 21351
 
 ### 5/3/2018
+
+## 29/7/2018
+### Tree states
+https://docs.google.com/spreadsheets/d/175IhOrYseiRWdDT4lwTgxA61GhVt3Ul3eON0_b8md2s/edit#gid=0
+
+### Definiton document
+https://docs.google.com/document/d/1GKJMDmAp9SjPEdWVMSUOmdqRxPe0D4RtXTn6_ycK0vU/edit#
