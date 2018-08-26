@@ -14,11 +14,11 @@ board.on('ready', () => {
     touchpad.on('press', ({which}) => console.log(which))
     touchpad.on('hold', ({which}) => console.log(which))
     touchpad.on('release', ({which}) => console.log(which))
-
+debugger;
     var write = (message) => {
-        this.i2cWrite(0x45, message)//Array.from(message, c => c.charCodeAt(0)));
+        this.io.i2cWrite(0x45, message)//Array.from(message, c => c.charCodeAt(0)));
     };
-    this.i2cConfig();
+    this.io.i2cConfig();
     write([0x06]);
     this.repl.inject({ write });
 });
