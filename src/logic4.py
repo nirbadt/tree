@@ -12,16 +12,22 @@ from subprocess import call
 SERIAL_PORT = '/dev/ttyACM0'
 #SERIAL_PORT = '/dev/ttyACM0'
 
+PIXEL_COUNT = 240
+GROWING_SPEED = 3
+SHRINKING_SPEED = 6
+
+#global remoteTouchCount
+remoteTouchCount = 0
+
 print('initializing serial')
 ser = serial.Serial(SERIAL_PORT)
-ser.baudrate = 9600
+ser.baudrate = 115200
 print('serial initialized')
 
 #pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 #pygame.init() #turn all of pygame on.
 
 touchCount = 0
-remoteTouchCount1 = 0
 
 print('initializing sound')
 pygame.mixer.init()
@@ -83,7 +89,6 @@ def millis():
 def to_state(state, new_state, LED_state):
     state.current = new_state
     print ("Changing state to " + new_state + "\n")
-    ser.write(LED_state)
     state.release_start_millis = None
     state.state_start_millis = millis()
 
@@ -181,18 +186,18 @@ def v0_write_handler(value):
     global q
     if get_tree_number() == 0:
         #q.put(value)
-        global remoteTouchCount1
-        remoteTouchCount1 = value
-        print("V0 Got value: " + remoteTouchCount1 + "\n")
+        global remoteTouchCount
+        remoteTouchCount = int(value)
+        #print("V0 Got value: " + remoteTouchCount + "\n")
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
     global q
     if get_tree_number() == 1:
         #q.put(value)
-        global remoteTouchCount1
-        remoteTouchCount1 = value
-        print("V1 Got value: " + remoteTouchCount1 + "\n")
+        global remoteTouchCount
+        remoteTouchCount = int(value)
+        #print("V1 Got value: " + remoteTouchCount + "\n")
 
 def get_tree_number():
     host_name = str(subprocess.check_output(['hostname']))
@@ -233,22 +238,83 @@ None
 
 
 last_tick = millis()
+last_touched = False
+last_remoteTouchCount = 0
+inWinningState = False
+#global remoteTouchCount
+
 while True:
     touched = cap.is_touched(0)
     if touched:
-      touchCount = touchCount + 1
-      if touchCount > 240:
-        touchCount = 240
+      if last_touched == False:
+        print 'local charging started'
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.play()
+        
+      touchCount = touchCount + GROWING_SPEED
+      if touchCount > PIXEL_COUNT:
+        touchCount = PIXEL_COUNT
     else:
-      touchCount = touchCount - 3
-      if touchCount < 0:
+      if last_touched == True:
+        print 'local charging stopped'
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("my_sound16_reversed2.wav")
+        pygame.mixer.music.play()
+
+      if touchCount > 0 and touchCount <= SHRINKING_SPEED:
+        print 'local discharging ended'
+        pygame.mixer.music.fadeout(2000)
+        #pygame.mixer.music.load("")
+        #pygame.mixer.music.play()
+
+      touchCount = touchCount - SHRINKING_SPEED
+      if touchCount <= 0:
         touchCount = 0
     #send_message(touchCount)
-    ser.write("{} {}".format(touchCount, remoteTouchCount1))
-    time.sleep(0.1)
-    print("{} {}".format(touchCount, remoteTouchCount1))
-    elapsed_time = millis() - last_tick
-    if elapsed_time > TICK_TIME:
-        last_tick = millis()
+    #global remoteTouchCount
+    ser.write("{} {}".format(touchCount, remoteTouchCount))
+    #print("{} {}".format(touchCount, remoteTouchCount))
+    time.sleep(0.05)
+    
+    # other end incoming sound handling:
+    # give preference to local interaction over remote interaction
+    if touchCount == 0:
+      #global remoteTouchCount
+      if last_remoteTouchCount == 0 and remoteTouchCount > 0:
+        print 'remote charging detected'
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("other_sound16.wav")
+        pygame.mixer.music.play()
+      else:
+        if last_remoteTouchCount > remoteTouchCount:
+          pygame.mixer.music.fadeout(2000)
+        
+    # handle winning state
+    #global remoteTouchCount
+    if remoteTouchCount > 0:
+      if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
+        if inWinningState == False:
+          pygame.mixer.music.stop()
+          pygame.mixer.music.load("both_sound16.wav")
+          pygame.mixer.music.play()
+          inWinningState = True
+      else:
+        inWinningState = False
+
+
+    if last_remoteTouchCount == PIXEL_COUNT and remoteTouchCount < PIXEL_COUNT:
+      if touchCount == 0:
+        pygame.mixer.music.fadeout(2000)
+      else:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.play()        
+
+#    elapsed_time = millis() - last_tick
+#    if elapsed_time > TICK_TIME:
+#        last_tick = millis()
 #        q.put(MSG_TICK)
 #    previous_touched = touched
+    last_touched = touched
+    last_remoteTouchCount = remoteTouchCount
