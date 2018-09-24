@@ -18,7 +18,8 @@ You will need 3 codes - one for the RaspberryPie units (identical code for both 
 4) ssh pi@192.168.1.104 (babypi)
 
 ## Libraries
-Install the 
+For a new Rpi, install the MPR121 libraries: https://github.com/adafruit/Adafruit_Python_MPR121
+and the 
 
 8) Capasitive
 	* connect a banaba
