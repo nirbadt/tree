@@ -1,56 +1,24 @@
-
-
-
-## TODO
-	* make it locally testable
-	* client/server unification and agnostic auto-discovery
-	 
-
-## Startup
-### Papa - server
-```
-# Terminal 1
-ssh pi@PAPA-IP
-ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
-
-# Trerminal 2
-ssh pi@PAPA-IP
-cd Tree
-sudo python server.py 10000
-```
-
-### Baby - client
-```
-ssh pi@BABY-IP
-cd Tree
-sudo python client.py 1.tcp.eu.ngrok.io 21351
-```
-
 ## Setup
-1) Install the os when prompted
-2) Preferences -> Enable SSH
-3) Login, user `pi`, password `raspberry`
-4) ssh pi@192.168.1.104 (babypi)
-5) soft
-```bash
-	sudo apt-get update 
-	sudo apt-get install p7zip-full 
-	sudo apt-get install apache2 -y 
-	sudo apt-get install -y git 
-	sudo apt-get install python-twisted 
-	sudo apt-get install socat 
-```
-6) Libraries
+Setup an internet network with name:Noden password:syntheos  /if it doesnot work try noden (no capital N)
+Connect both units to electricty
+Connect the USB coming out from the box, back into the Raspberry pie USB port (doesn't matter which one)
+Connect the Raspberry pie to electricty through a standard micro usb B.
+*As the Pie automatically runs the project code on startup, make sure you connect the Teenzy to the Pie before you connect the Pie to electricty. If not, the Pie's code will fail over miscommunication with the Teenzy.
+
 	
-7) download and install ngrok
-	* linux, arm -> wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-arm.zip
-	* unzip ngrok-stable-linux-arm.zip
-	* sudo mv ./ngrok /usr/local/bin/
-	* ngrok authtoken TOKEN
-	* ngrok http 80
-	* ngrok tcp 20 -> ssh pi@0.tcp.ngrok.io -oPort=16865
-	* ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21351 10000
-	* ngrok tcp --region=eu --remote-addr=1.tcp.eu.ngrok.io:21352 10000
+## Test
+Test it by sending a signal from one unit to the other. Please note, sending a signal takes time so it recoomeneded to connect at least 1 LED strip to each unit to see the signal moving.
+
+## codes
+You will need 3 codes - one for the RaspberryPie units (identical code for both units) and two for the Teenzy (one for each one of them).
+
+## SSH
+1) Check through routher what is the IP of the Pi
+2) Login, user `pi`, password `raspberry`
+4) ssh pi@192.168.1.104 (babypi)
+
+## Libraries
+Install the 
 
 8) Capasitive
 	* connect a banaba
@@ -69,16 +37,10 @@ https://github.com/adafruit/Adafruit_Python_MPR121
 https://github.com/Yahavw/shula
 https://github.com/Yahavw/shula/blob/master/rpi/rpi_config.json
 
-## Disable soundcard
-```
-sudo vi /etc/modprobe.d/alsa-blacklist.conf
-blacklist snd_bcm2835
-```
 
 ## Resources
 http://www.giantflyingsaucer.com/blog/?p=4967
 http://learning-0mq-with-pyzmq.readthedocs.io/en/latest/pyzmq/patterns/pubsub.html
-
 http://www.brynosaurus.com/pub/net/p2pnat/
 
 
@@ -95,4 +57,6 @@ pi@papapi:~/Tree $ sudo python client.py 1.tcp.eu.ngrok.io 21351
 https://docs.google.com/spreadsheets/d/175IhOrYseiRWdDT4lwTgxA61GhVt3Ul3eON0_b8md2s/edit#gid=0
 
 ### Definiton document
-https://docs.google.com/document/d/1GKJMDmAp9SjPEdWVMSUOmdqRxPe0D4RtXTn6_ycK0vU/edit#
+https://drive.google.com/drive/u/0/folders/1VJmJFb3NY0qjUHO7iE7arsCX7nPm9Nrt
+
+
