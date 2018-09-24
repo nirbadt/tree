@@ -1,5 +1,22 @@
 
+# First time init on the pi
+1. Install ngrock by downloading it from here:
+`https://ngrok.com/download`
+2. Sign up for ngrock
+3. Connect your auth token (REPLACE WITH YOURS)
+`./ngrok authtoken 24AUTH_TOKEN_REPLACE_ME`
+4. pip3 install -r requirements.txt
 
+# Testing
+To test connect one hand
+Then run
+1.cd src
+2.pip3 install -r requirements.txt
+3.python3 test.py 
+
+## System architecture
+We have 2 raspberry pie. One is called `Papa` (The server) and 
+the other is called `Baby` (The client that connect to the server)
 
 ## TODO
 	* make it locally testable
@@ -26,10 +43,11 @@ cd Tree
 sudo python client.py 1.tcp.eu.ngrok.io 21351
 ```
 
-## Setup
+## Setup the pi
 1) Install the os when prompted
 2) Preferences -> Enable SSH
 3) Login, user `pi`, password `raspberry`
+3.5) Make sure you set the hostname of one of them to be `papatree` 
 4) ssh pi@192.168.1.104 (babypi)
 5) soft
 ```bash

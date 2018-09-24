@@ -1,31 +1,22 @@
+import BlynkLib
+import pygame
 import Queue
 import threading
 import time
-import BlynkLib
-import Adafruit_MPR121.MPR121 as MPR121
-import subprocess
-import serial
-import pygame
+import traceback
 
 from subprocess import call
-
-SERIAL_PORT = '/dev/ttyACM0'
-#SERIAL_PORT = '/dev/ttyACM0'
 
 PIXEL_COUNT = 240
 GROWING_SPEED = 3
 SHRINKING_SPEED = 6
 
+TREE_TO_TEST = 1 # TODO: Replace to 1 if you are testing the other tree
+
 #global remoteTouchCount
 remoteTouchCount = 0
 
-print('initializing serial')
-ser = serial.Serial(SERIAL_PORT)
-ser.baudrate = 115200
-print('serial initialized')
-
-#pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
-#pygame.init() #turn all of pygame on.
+print('Initialize')
 
 touchCount = 0
 
@@ -33,7 +24,7 @@ print('initializing sound')
 pygame.mixer.init()
 print('sound initialized')
 
-pygame.mixer.music.load("sounds/match1.wav")
+pygame.mixer.music.load("other_sound16.wav")
 pygame.mixer.music.play()
 
 MSG_TOUCH = 'touch'
@@ -70,7 +61,7 @@ class State:
         self.LED = 1
 
 def send_message(message):
-    #print ("Sending message: " + message + "\n")
+    print ("Sending message: {}".format(message))
     tree_id = get_tree_number()
     other_tree_id = tree_id ^ 1
     call(["curl", "http://" + BLYNK_SERVER + "/" + BLYNK_AUTH + "/update/V{0}?value={1}".format(other_tree_id, message)])
@@ -135,7 +126,7 @@ def in_charged(state, message):
     elif message == MSG_TICK:
         if state.release_start_millis:
             elapsed_time = millis() - state.release_start_millis
-            print "elapsed time is" + elapsed_time +"\n"
+            print("elapsed time is {}\n".format(elapsed_time))
             if elapsed_time > CHARGE_RELEASE_TIME:
                 to_state(state, ST_STANDBY, LED_STANDBY)
                 pygame.mixer.music.stop()
@@ -171,13 +162,14 @@ def state_machine(q):
         global touchCount
         send_message(touchCount)
         time.sleep(0.5)
-        #message = q.get()
+        #message =
+        # .get()
         #if message != MSG_TICK:
         #    print("Got message: '" + message + "' while in state " + state.current + "\n")
         # run the method that handles the specific state we're in
         #state_handlers[state.current](state, message)
         if state.current != last_state:
-            print("Now in state: " + state.current + "\n")
+            print("Now in state: {}\n".format(state.current))
             last_state = state.current
 
 print('initializing blynk')
@@ -187,40 +179,31 @@ blynk = BlynkLib.Blynk(BLYNK_AUTH, server=BLYNK_SERVER)
 def v0_write_handler(value):
     global q
     if get_tree_number() == 0:
-        #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
-        #print("V0 Got value: " + remoteTouchCount + "\n")
+        print("V0 Got value: {}".format(remoteTouchCount))
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
     global q
     if get_tree_number() == 1:
-        #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
-        #print("V1 Got value: " + remoteTouchCount + "\n")
+        print("V1 Got value: {}".format(remoteTouchCount))
 
 def get_tree_number():
-    host_name = str(subprocess.check_output(['hostname']))
-    return 0 if 'papa' in host_name else 1
+    return TREE_TO_TEST
 
 def blynk_thread():
     while(True):
         try:
             blynk.run()
         except Exception as ex:
+            print(ex)
+            traceback.print_exc()
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             message = template.format(type(ex).__name__, ex.args)
             print (message)
-
-# initialize capacitive sensor
-cap = MPR121.MPR121()
-if not cap.begin(busnum=1):
-    print('Error initializing MPR121.  Check your wiring!')
-    sys.exit(1)
-else:
-    print('cap initialized')
 
 tree_number = get_tree_number()
 print("Tree number is: " + str(tree_number) + "\n");
@@ -235,21 +218,26 @@ t = threading.Thread(target = blynk_thread)
 t.daemon = True
 t.start()
 
-None
-#previous_touched = False
-
 
 last_tick = millis()
 last_touched = False
 last_remoteTouchCount = 0
 inWinningState = False
-#global remoteTouchCount
+
+# Time to switch between touch and dont touch of the button
+test_switch_time = 10
+last_switch = millis() - test_switch_time
+touched = False
 
 while True:
-    touched = cap.is_touched(0)
+    if millis() > last_switch + test_switch_time:
+        touched = not touched
+        print('Button is {}'.format(touched))
+        last_switch = millis()
+
     if touched:
       if last_touched == False:
-        print 'local charging started'
+        print('local charging started')
         pygame.mixer.music.stop()
         pygame.mixer.music.load("my_sound16.wav")
         pygame.mixer.music.play()
@@ -259,13 +247,13 @@ while True:
         touchCount = PIXEL_COUNT
     else:
       if last_touched == True:
-        print 'local charging stopped'
+        print('local charging stopped')
         pygame.mixer.music.stop()
         pygame.mixer.music.load("my_sound16_reversed2.wav")
         pygame.mixer.music.play()
 
       if touchCount > 0 and touchCount <= SHRINKING_SPEED:
-        print 'local discharging ended'
+        print('local discharging ended')
         pygame.mixer.music.fadeout(2000)
         #pygame.mixer.music.load("")
         #pygame.mixer.music.play()
@@ -273,18 +261,14 @@ while True:
       touchCount = touchCount - SHRINKING_SPEED
       if touchCount <= 0:
         touchCount = 0
-    #send_message(touchCount)
-    #global remoteTouchCount
-    ser.write("{} {}".format(touchCount, remoteTouchCount))
-    #print("{} {}".format(touchCount, remoteTouchCount))
+
     time.sleep(0.05)
     
     # other end incoming sound handling:
     # give preference to local interaction over remote interaction
     if touchCount == 0:
-      #global remoteTouchCount
       if last_remoteTouchCount == 0 and remoteTouchCount > 0:
-        print 'remote charging detected'
+        print('remote charging detected')
         pygame.mixer.music.stop()
         pygame.mixer.music.load("other_sound16.wav")
         pygame.mixer.music.play()
@@ -293,7 +277,6 @@ while True:
           pygame.mixer.music.fadeout(2000)
         
     # handle winning state
-    #global remoteTouchCount
     if remoteTouchCount > 0:
       if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
         if inWinningState == False:
@@ -313,10 +296,5 @@ while True:
         pygame.mixer.music.load("my_sound16.wav")
         pygame.mixer.music.play()        
 
-#    elapsed_time = millis() - last_tick
-#    if elapsed_time > TICK_TIME:
-#        last_tick = millis()
-#        q.put(MSG_TICK)
-#    previous_touched = touched
     last_touched = touched
     last_remoteTouchCount = remoteTouchCount
