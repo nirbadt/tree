@@ -6,11 +6,11 @@ import Adafruit_MPR121.MPR121 as MPR121
 import subprocess
 import serial
 import pygame
+from os import path
 
 from subprocess import call
 
 SERIAL_PORT = '/dev/ttyACM0'
-#SERIAL_PORT = '/dev/ttyACM0'
 
 PIXEL_COUNT = 240
 GROWING_SPEED = 3
@@ -75,15 +75,6 @@ def send_message(message):
     other_tree_id = tree_id ^ 1
     call(["curl", "http://" + BLYNK_SERVER + "/" + BLYNK_AUTH + "/update/V{0}?value={1}".format(other_tree_id, message)])
 
-def get_state_handlers():
-    state_handlers = {}
-    state_handlers[ST_STANDBY] = in_standby
-    state_handlers[ST_CHARGING] = in_charging
-    state_handlers[ST_CHARGED] = in_charged
-    state_handlers[ST_BEEN_INVITED] = in_been_invited
-    state_handlers[ST_WIN] = in_win
-    return state_handlers
-
 def millis():
     return time.time()
 
@@ -96,11 +87,11 @@ def to_state(state, new_state, LED_state):
 def in_standby(state, message):
     if message == MSG_TOUCH:
         to_state(state, ST_CHARGING, LED_CHARGING)
-        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds','my_sound16.wav'))
         pygame.mixer.music.play()
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_BEEN_INVITED, LED_BEEN_INVITED)
-        pygame.mixer.music.load("other_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds','other_sound16.wav'))
         pygame.mixer.music.play()
 
 def in_charging(state, message):
@@ -111,13 +102,13 @@ def in_charging(state, message):
         elapsed_time = millis() - state.state_start_millis
         if elapsed_time > CHARGE_TIME:
             to_state(state, ST_CHARGED, LED_CHARGED)
-            pygame.mixer.music.load("other_sound16.wav")
+            pygame.mixer.music.load(path.join('sounds','other_sound16.wav'))
             pygame.mixer.music.play()
             send_message(MSG_GOT_INVITED)
 
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds','both_sound16.wav'))
         pygame.mixer.music.play()
 
 def in_charged(state, message):
@@ -125,12 +116,12 @@ def in_charged(state, message):
         state.release_start_millis = millis()
     elif message == MSG_GOT_WIN:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'both_sound16.wav'))
         pygame.mixer.music.play()
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_WIN, LED_WIN)
         send_message(MSG_GOT_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'both_sound16.wav'))
         pygame.mixer.music.play()
     elif message == MSG_TICK:
         if state.release_start_millis:
@@ -145,12 +136,12 @@ def in_charged(state, message):
 def in_been_invited(state, message):
     if message == MSG_TOUCH:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'both_sound16.wav'))
         pygame.mixer.music.play()
         send_message(MSG_GOT_WIN)
     elif message == MSG_GOT_WIN:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'both_sound16.wav'))
         pygame.mixer.music.play()
     elif message == MSG_GOT_CHARGE_RELEASED:
         to_state(state, ST_STANDBY, LED_STANDBY)
@@ -163,19 +154,12 @@ def in_win(state, message):
         pygame.mixer.music.stop()
 
 def state_machine(q):
-    #last_state = state
     state = State()
-    state_handlers = get_state_handlers()
     last_state = ST_STANDBY
     while True:
         global touchCount
         send_message(touchCount)
         time.sleep(0.5)
-        #message = q.get()
-        #if message != MSG_TICK:
-        #    print("Got message: '" + message + "' while in state " + state.current + "\n")
-        # run the method that handles the specific state we're in
-        #state_handlers[state.current](state, message)
         if state.current != last_state:
             print("Now in state: " + state.current + "\n")
             last_state = state.current
@@ -248,20 +232,20 @@ inWinningState = False
 while True:
     touched = cap.is_touched(0)
     if touched:
-      if last_touched == False:
+      if not last_touched:
         print 'local charging started'
         pygame.mixer.music.stop()
-        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'my_sound16.wav'))
         pygame.mixer.music.play()
         
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
         touchCount = PIXEL_COUNT
     else:
-      if last_touched == True:
+      if last_touched:
         print 'local charging stopped'
         pygame.mixer.music.stop()
-        pygame.mixer.music.load("my_sound16_reversed2.wav")
+        pygame.mixer.music.load(path.join('sounds', 'my_sound16_reversed2.wav'))
         pygame.mixer.music.play()
 
       if touchCount > 0 and touchCount <= SHRINKING_SPEED:
@@ -286,7 +270,7 @@ while True:
       if last_remoteTouchCount == 0 and remoteTouchCount > 0:
         print 'remote charging detected'
         pygame.mixer.music.stop()
-        pygame.mixer.music.load("other_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds', 'other_sound16.wav'))
         pygame.mixer.music.play()
       else:
         if last_remoteTouchCount > remoteTouchCount:
@@ -295,10 +279,10 @@ while True:
     # handle winning state
     #global remoteTouchCount
     if remoteTouchCount > 0:
-      if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
-        if inWinningState == False:
+      if remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT:
+        if not inWinningState:
           pygame.mixer.music.stop()
-          pygame.mixer.music.load("both_sound16.wav")
+          pygame.mixer.music.load(path.join('sounds', 'both_sound16.wav'))
           pygame.mixer.music.play()
           inWinningState = True
       else:
@@ -310,7 +294,7 @@ while True:
         pygame.mixer.music.fadeout(2000)
       else:
         pygame.mixer.music.stop()
-        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.load(path.join('sounds','my_sound16.wav'))
         pygame.mixer.music.play()        
 
 #    elapsed_time = millis() - last_tick
