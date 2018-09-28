@@ -23,6 +23,9 @@ remoteTouchCount = 0
 
 idle_start_time = time.time()
 
+local_charging_started_time = time.time()
+
+
 print('initializing serial')
 ser = serial.Serial(SERIAL_PORT)
 ser.baudrate = 115200
@@ -169,7 +172,7 @@ def state_machine(q):
         # We encode the other that was chosen in the send_message count.
         # So for example if we are at pixel 54 and the sound we chose is 2 we would send 2054
         touch_count_and_message = touchCount + (1000 * selected_random_sound)
-        print('Sending {}' + touch_count_and_message)
+        print('Sending {}'.format(str(touch_count_and_message)))
         send_message(touch_count_and_message)
         time.sleep(0.5)
         if state.current != last_state:
@@ -246,24 +249,30 @@ while True:
     if touched:
       idle_start_time = millis() + 100000 # Not idle - setting it to future time
       if not last_touched:
-        print 'local charging started'
+        print('local charging started')
+        local_charging_started_time = millis()
         pygame.mixer.music.stop()
         selected_random_sound = random.randint(0, len(my_sounds))
         selected_random_sound_file = my_sounds[selected_random_sound]
-        selected_random_sound += 1 # To prevent zero based when multiplying
+        selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
         play_sound(selected_random_sound_file)
 
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
         touchCount = PIXEL_COUNT
+
+      # Check if since started local charging time pass to play next local charging
+      # TODO local_charging_started_time
+      if local_charging_started_time
+
     else:
       if last_touched:
-        print 'local charging stopped'
+        print('local charging stopped')
         pygame.mixer.music.stop()
         #play_sound('my_sound16_reversed2.wav')
 
       if touchCount > 0 and touchCount <= SHRINKING_SPEED:
-        print 'local discharging ended'
+        print('local discharging ended')
         pygame.mixer.music.fadeout(2000)
         idle_start_time = millis()
         #pygame.mixer.music.load("")
@@ -283,7 +292,7 @@ while True:
     if touchCount == 0:
       #global remoteTouchCount
       if last_remoteTouchCount == 0 and remoteTouchCount > 0:
-        print 'remote charging detected'
+        print('remote charging detected')
         pygame.mixer.music.stop()
         # We encode the other sound inside the remote number so for sound # 4 we send 4000
         # So if we light 50 leds it would be 4050
