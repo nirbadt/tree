@@ -7,6 +7,7 @@ import subprocess
 import serial
 import pygame
 from os import path
+import math
 
 import random
 from subprocess import call
@@ -30,11 +31,12 @@ print('serial initialized')
 #pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 #pygame.init() #turn all of pygame on.
 
-my_sounds = ['my_01.wav','my_02.wav','my_03.wav','my_04.wav','my_05.wav','my_06.wav','my_07.wav','my_08.wav']
-other_sounds = ['other_01.wav','other_02.wav','other_03.wav','other_04.wav','other_05.wav','other_06.wav','other_07.wav','other_08.wav','other_09.wav']
+my_sounds = ['my_1.wav','my_2.wav','my_3.wav','my_4.wav','my_5.wav','my_6.wav','my_7.wav','my_8.wav','my_9.wav']
+other_sounds = ['other_1.wav','other_2.wav','other_3.wav','other_4.wav','other_5.wav','other_6.wav','other_7.wav','other_8.wav','other_9.wav']
 breath_sounds = ['breath_01.wav','breath_02.wav','breath_03.wav','breath_04.wav']
 
 touchCount = 0
+selected_random_sound = 1
 
 print('initializing sound')
 pygame.mixer.init()
@@ -163,7 +165,12 @@ def state_machine(q):
     last_state = ST_STANDBY
     while True:
         global touchCount
-        send_message(touchCount)
+        global selected_random_sound
+        # We encode the other that was chosen in the send_message count.
+        # So for example if we are at pixel 54 and the sound we chose is 2 we would send 2054
+        touch_count_and_message = touchCount + (1000 * selected_random_sound)
+        print('Sending {}' + touch_count_and_message)
+        send_message(touch_count_and_message)
         time.sleep(0.5)
         if state.current != last_state:
             print("Now in state: " + state.current + "\n")
@@ -175,11 +182,12 @@ blynk = BlynkLib.Blynk(BLYNK_AUTH, server=BLYNK_SERVER)
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
     global q
+
     if get_tree_number() == 0:
         #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
-        #print("V0 Got value: " + remoteTouchCount + "\n")
+        print("V0 Got value: {}\n".format(value))
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
@@ -188,7 +196,7 @@ def v1_write_handler(value):
         #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
-        #print("V1 Got value: " + remoteTouchCount + "\n")
+        print("V1 Got value: {}\n".format(value))
 
 def get_tree_number():
     host_name = str(subprocess.check_output(['hostname']))
@@ -240,9 +248,11 @@ while True:
       if not last_touched:
         print 'local charging started'
         pygame.mixer.music.stop()
-        my_random = random.choice(my_sounds)
-        play_sound(my_random)
-        
+        selected_random_sound = random.randint(0, len(my_sounds))
+        selected_random_sound_file = my_sounds[selected_random_sound]
+        selected_random_sound += 1 # To prevent zero based when multiplying
+        play_sound(selected_random_sound_file)
+
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
         touchCount = PIXEL_COUNT
@@ -275,6 +285,11 @@ while True:
       if last_remoteTouchCount == 0 and remoteTouchCount > 0:
         print 'remote charging detected'
         pygame.mixer.music.stop()
+        # We encode the other sound inside the remote number so for sound # 4 we send 4000
+        # So if we light 50 leds it would be 4050
+        if remoteTouchCount > 1000:
+            other_sound = math.floor(remoteTouchCount / 1000)
+            play_sound('other_{}.wav'.format(other_sound))
 
         other_random = random.choice(other_sounds)
         play_sound(other_random)

@@ -6,6 +6,7 @@ import time
 import traceback
 
 from os import path
+import math
 
 from subprocess import call
 
@@ -13,7 +14,7 @@ PIXEL_COUNT = 240
 GROWING_SPEED = 3
 SHRINKING_SPEED = 6
 
-TREE_TO_TEST = 1 # TODO: Replace to 1 if you are testing the other tree
+TREE_TO_TEST = 0 # TODO: Replace to 1 if you are testing the other tree
 
 #global remoteTouchCount
 remoteTouchCount = 0
@@ -23,10 +24,11 @@ print('Initialize')
 touchCount = 0
 
 print('initializing sound')
+#pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 pygame.mixer.init()
 print('sound initialized')
 
-pygame.mixer.music.load(path.join("sounds","other_sound16.wav"))
+pygame.mixer.music.load(path.join("sounds","other_1.wav"))
 pygame.mixer.music.play()
 
 MSG_TOUCH = 'touch'
@@ -93,10 +95,10 @@ def play_sound(sound_file):
 def in_standby(state, message):
     if message == MSG_TOUCH:
         to_state(state, ST_CHARGING, LED_CHARGING)
-        play_sound("my_sound16.wav")
+        play_sound("my_01.wav")
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_BEEN_INVITED, LED_BEEN_INVITED)
-        play_sound("other_sound16.wav")
+        play_sound("other_1.wav")
 
 def in_charging(state, message):
     if message == MSG_RELEASE:
@@ -106,7 +108,7 @@ def in_charging(state, message):
         elapsed_time = millis() - state.state_start_millis
         if elapsed_time > CHARGE_TIME:
             to_state(state, ST_CHARGED, LED_CHARGED)
-            play_sound("other_sound16.wav")
+            play_sound("other_1.wav")
             send_message(MSG_GOT_INVITED)
 
     elif message == MSG_GOT_INVITED:
@@ -179,7 +181,7 @@ def v0_write_handler(value):
     if get_tree_number() == 0:
         global remoteTouchCount
         remoteTouchCount = int(value)
-        print("V0 Got value: {}".format(remoteTouchCount))
+        print("V0 Got value: {}".format(value))
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
@@ -187,7 +189,7 @@ def v1_write_handler(value):
     if get_tree_number() == 1:
         global remoteTouchCount
         remoteTouchCount = int(value)
-        print("V1 Got value: {}".format(remoteTouchCount))
+        print("V1 Got value: {}".format(value))
 
 def get_tree_number():
     return TREE_TO_TEST
@@ -229,7 +231,7 @@ touched = False
 
 while True:
     if millis() > last_switch + test_switch_time:
-        touched = not touched
+        touched = False#TODO not touched
         print('Button is {}'.format(touched))
         last_switch = millis()
 
@@ -237,7 +239,7 @@ while True:
       if last_touched == False:
         print('local charging started')
         pygame.mixer.music.stop()
-        play_sound("my_sound16.wav")
+        play_sound("my_01.wav")
         
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
@@ -246,7 +248,7 @@ while True:
       if last_touched == True:
         print('local charging stopped')
         pygame.mixer.music.stop()
-        play_sound("my_sound16_reversed2.wav")
+
 
       if touchCount > 0 and touchCount <= SHRINKING_SPEED:
         print('local discharging ended')
@@ -266,11 +268,15 @@ while True:
       if last_remoteTouchCount == 0 and remoteTouchCount > 0:
         print('remote charging detected')
         pygame.mixer.music.stop()
-        play_sound("other_sound16.wav")
+        # We encode the other sound inside the remote number so for sound # 4 we send 4000
+        # So if we light 50 leds it would be 4050
+        if remoteTouchCount > 1000:
+            other_sound = math.floor(remoteTouchCount / 1000)
+            play_sound('other_{}.wav'.format(other_sound))
       else:
         if last_remoteTouchCount > remoteTouchCount:
           pygame.mixer.music.fadeout(2000)
-        
+
     # handle winning state
     if remoteTouchCount > 0:
       if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
@@ -287,7 +293,7 @@ while True:
         pygame.mixer.music.fadeout(2000)
       else:
         pygame.mixer.music.stop()
-        play_sound("my_sound16.wav")
+        play_sound("my_01.wav")
 
     last_touched = touched
     last_remoteTouchCount = remoteTouchCount
