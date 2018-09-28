@@ -101,8 +101,8 @@ def to_state(state, new_state, LED_state):
     state.state_start_millis = millis()
 
 def play_sound(sound_file):
-    sound = pygame.mixer.Sound(path.join('sounds', sound_file))
-    pygame.mixer.Channel(1).play(sound)
+    pygame.mixer.music.load((path.join('sounds', sound_file)))
+    pygame.mixer.music.play()
 
 def in_standby(state, message):
     if message == MSG_TOUCH:
@@ -201,6 +201,8 @@ def v0_write_handler(value):
         #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
+        # Because we add 1000 here we remove it
+        remoteTouchCount = remoteTouchCount % 1000
         print("V0 Got value: {}\n".format(value))
 
 @blynk.VIRTUAL_WRITE(1)
@@ -210,6 +212,8 @@ def v1_write_handler(value):
         #q.put(value)
         global remoteTouchCount
         remoteTouchCount = int(value)
+        # Because we add 1000 here we remove it
+        remoteTouchCount = remoteTouchCount % 1000
         print("V1 Got value: {}\n".format(value))
 
 def get_tree_number():
@@ -269,7 +273,7 @@ while True:
 
       # Already touching
       else:
-        if not pygame.mixer.Channel(1).get_busy:
+        if not pygame.mixer.music.get_busy():
           next_random_sound()
 
       touchCount = touchCount + GROWING_SPEED
