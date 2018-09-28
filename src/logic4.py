@@ -21,6 +21,9 @@ SHRINKING_SPEED = 6
 #global remoteTouchCount
 remoteTouchCount = 0
 
+# alter between me and other
+me_other_flag = False
+
 idle_start_time = time.time()
 
 local_charging_started_time = time.time()
@@ -324,7 +327,18 @@ while True:
       else:
         if last_remoteTouchCount > remoteTouchCount:
           pygame.mixer.music.fadeout(2000)
-        
+
+
+    # both are touching - play other and my
+    if remoteTouchCount > 0 and touchCount > 0:
+        global me_other_flag
+        if not pygame.mixer.music.get_busy():
+            me_other_flag = not me_other_flag
+            if me_other_flag:
+                next_random_sound(other_sounds)
+            else:
+                next_random_sound(my_sounds)
+
     # handle winning state
     #global remoteTouchCount
     if remoteTouchCount > 0:

@@ -23,6 +23,8 @@ remoteTouchCount = 0
 
 idle_start_time = time.time()
 
+# alter between me and other
+me_other_flag = False
 local_charging_started_time = time.time()
 
 print('Initialize')
@@ -164,8 +166,8 @@ def in_win(state, message):
         send_message(MSG_GOT_CHARGE_RELEASED)
         pygame.mixer.music.stop()
 
-def next_random_sound():
-    selected_random_sound = random.randint(0, len(my_sounds)-1)
+def next_random_sound(sounds_array):
+    selected_random_sound = random.randint(0, len(sounds_array)-1)
     selected_random_sound_file = my_sounds[selected_random_sound]
     selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
     play_sound(selected_random_sound_file)
@@ -265,12 +267,12 @@ while True:
             if millis() - local_charging_started_time > 1:
                 local_charging_started_time = millis()
                 pygame.mixer.music.stop()
-                next_random_sound()
+                next_random_sound(my_sounds)
 
         # Already touching
         else:
             if not pygame.mixer.music.get_busy():
-                next_random_sound()
+                next_random_sound(my_sounds)
 
         touchCount = touchCount + GROWING_SPEED
         if touchCount > PIXEL_COUNT:
@@ -320,6 +322,11 @@ while True:
         else:
             if last_remoteTouchCount > remoteTouchCount:
                 pygame.mixer.music.fadeout(2000)
+
+    # both are touching - play other and my
+    if remoteTouchCount > 0 and touchCount > 0:
+        if not pygame.mixer.music.get_busy():
+            next_random_sound(other_sounds)
 
     # handle winning state
     #global remoteTouchCount
