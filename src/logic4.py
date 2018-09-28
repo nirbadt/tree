@@ -35,8 +35,8 @@ print('serial initialized')
 #pygame.mixer.pre_init(44100, 16, 2, 4096) #frequency, size, channels, buffersize
 #pygame.init() #turn all of pygame on.
 
-my_sounds = ['my_1.wav','my_2.wav','my_3.wav','my_4.wav','my_5.wav','my_6.wav','my_7.wav','my_8.wav','my_9.wav']
-other_sounds = ['other_1.wav','other_2.wav','other_3.wav','other_4.wav','other_5.wav','other_6.wav','other_7.wav','other_8.wav','other_9.wav']
+my_sounds = ['my_1.wav','my_2.wav','my_3.wav','my_4.wav','my_5.wav','my_6.wav','my_7.wav','my_8.wav']
+other_sounds = ['other_1.wav','other_2.wav','other_3.wav','other_4.wav','other_5.wav','other_6.wav','other_7.wav','other_8.wav']
 breath_sounds = ['breath_1.wav','breath_2.wav','breath_3.wav','breath_4.wav']
 
 touchCount = 0
@@ -103,7 +103,6 @@ def to_state(state, new_state, LED_state):
 def play_sound(sound_file):
     sound = pygame.mixer.Sound(path.join('sounds', sound_file))
     pygame.mixer.Channel(1).play(sound)
-    #pygame.mixer.music.play()
 
 def in_standby(state, message):
     if message == MSG_TOUCH:
@@ -168,6 +167,12 @@ def in_win(state, message):
         to_state(state, ST_STANDBY, LED_STANDBY)
         send_message(MSG_GOT_CHARGE_RELEASED)
         pygame.mixer.music.stop()
+
+def next_random_sound():
+    selected_random_sound = random.randint(0, len(my_sounds)-1)
+    selected_random_sound_file = my_sounds[selected_random_sound]
+    selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
+    play_sound(selected_random_sound_file)
 
 def state_machine(q):
     state = State()
@@ -256,15 +261,16 @@ while True:
       idle_start_time = millis() + 100000 # Not idle - setting it to future time
       if not last_touched:
         print('local charging started')
-        local_charging_started_time = millis()
-        pygame.mixer.music.stop()
-        selected_random_sound = random.randint(0, len(my_sounds)-1)
-        selected_random_sound_file = my_sounds[selected_random_sound]
-        selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
-        play_sound(selected_random_sound_file)
+        # Wait 1 second before moving to next sound to protect sensor issues
+        if millis() - local_charging_started_time > 1:
+            local_charging_started_time = millis()
+            pygame.mixer.music.stop()
+            next_random_sound()
+
       # Already touching
       else:
-        pass
+        if not pygame.mixer.Channel(1).get_busy:
+          next_random_sound()
 
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
