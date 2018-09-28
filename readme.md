@@ -114,3 +114,9 @@ https://docs.google.com/spreadsheets/d/175IhOrYseiRWdDT4lwTgxA61GhVt3Ul3eON0_b8m
 
 ### Definiton document
 https://docs.google.com/document/d/1GKJMDmAp9SjPEdWVMSUOmdqRxPe0D4RtXTn6_ycK0vU/edit#
+
+# FAQ
+How to upload directly from my computer to the pi?
+```
+scp -r ~/Documents/projects/tree/src/ pi@10.0.0.6:/home/pi/tree/python
+```

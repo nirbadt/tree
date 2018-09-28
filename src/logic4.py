@@ -25,6 +25,7 @@ idle_start_time = time.time()
 
 local_charging_started_time = time.time()
 
+END_MUSIC_EVENT = pygame.USEREVENT + 0
 
 print('initializing serial')
 ser = serial.Serial(SERIAL_PORT)
@@ -36,13 +37,17 @@ print('serial initialized')
 
 my_sounds = ['my_1.wav','my_2.wav','my_3.wav','my_4.wav','my_5.wav','my_6.wav','my_7.wav','my_8.wav','my_9.wav']
 other_sounds = ['other_1.wav','other_2.wav','other_3.wav','other_4.wav','other_5.wav','other_6.wav','other_7.wav','other_8.wav','other_9.wav']
-breath_sounds = ['breath_01.wav','breath_02.wav','breath_03.wav','breath_04.wav']
+breath_sounds = ['breath_1.wav','breath_2.wav','breath_3.wav','breath_4.wav']
 
 touchCount = 0
 selected_random_sound = 1
 
 print('initializing sound')
 pygame.mixer.init()
+
+backdrop = pygame.mixer.Sound(path.join('sounds', 'backdrop_02.wav'))
+pygame.mixer.Channel(0).play(backdrop, loops=-1) # Play background always
+
 print('sound initialized')
 
 MSG_TOUCH = 'touch'
@@ -68,7 +73,7 @@ CHARGE_RELEASE_TIME = 0.5
 CHARGE_TIME = 7
 TICK_TIME = 0.1
 
-IDLE_TIME = 5
+IDLE_TIME = 10
 
 BLYNK_SERVER = '139.59.206.133'
 BLYNK_AUTH = 'ac4b8c5b7ece4a23b60e62733cf6d6fc'
@@ -96,8 +101,9 @@ def to_state(state, new_state, LED_state):
     state.state_start_millis = millis()
 
 def play_sound(sound_file):
-    pygame.mixer.music.load(path.join('sounds', sound_file))
-    pygame.mixer.music.play()
+    sound = pygame.mixer.Sound(path.join('sounds', sound_file))
+    pygame.mixer.Channel(1).play(sound)
+    #pygame.mixer.music.play()
 
 def in_standby(state, message):
     if message == MSG_TOUCH:
@@ -252,10 +258,13 @@ while True:
         print('local charging started')
         local_charging_started_time = millis()
         pygame.mixer.music.stop()
-        selected_random_sound = random.randint(0, len(my_sounds))
+        selected_random_sound = random.randint(0, len(my_sounds)-1)
         selected_random_sound_file = my_sounds[selected_random_sound]
         selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
         play_sound(selected_random_sound_file)
+      # Already touching
+      else:
+        pass
 
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
@@ -263,7 +272,7 @@ while True:
 
       # Check if since started local charging time pass to play next local charging
       # TODO local_charging_started_time
-      if local_charging_started_time
+      #if local_charging_started_time
 
     else:
       if last_touched:
