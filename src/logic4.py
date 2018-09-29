@@ -20,6 +20,7 @@ SHRINKING_SPEED = 6
 
 #global remoteTouchCount
 remoteTouchCount = 0
+pixelsOfRemoteTouchCount = 0
 
 # alter between me and other
 me_other_flag = False
@@ -203,9 +204,10 @@ def v0_write_handler(value):
     if get_tree_number() == 0:
         #q.put(value)
         global remoteTouchCount
+        global pixelsOfRemoteTouchCount
         remoteTouchCount = int(value)
-        # Because we add 1000 here we remove it
-        remoteTouchCount = remoteTouchCount % 1000
+        # Because we add 1000 here we removed it to get to the pixels
+        pixelsOfRemoteTouchCount = remoteTouchCount % 1000
         print("V0 Got value: {}\n".format(value))
 
 @blynk.VIRTUAL_WRITE(1)
@@ -214,9 +216,10 @@ def v1_write_handler(value):
     if get_tree_number() == 1:
         #q.put(value)
         global remoteTouchCount
+        global pixelsOfRemoteTouchCount
         remoteTouchCount = int(value)
-        # Because we add 1000 here we remove it
-        remoteTouchCount = remoteTouchCount % 1000
+        # Because we add 1000 here we removed it to get to the pixels
+        pixelsOfRemoteTouchCount = remoteTouchCount % 1000
         print("V1 Got value: {}\n".format(value))
 
 def get_tree_number():
@@ -319,13 +322,13 @@ while True:
         # We encode the other sound inside the remote number so for sound # 4 we send 4000
         # So if we light 50 leds it would be 4050
         if remoteTouchCount > 1000:
-            other_sound = math.floor(remoteTouchCount / 1000)
+            other_sound = int(math.floor(remoteTouchCount / 1000))
             play_sound('other_{}.wav'.format(other_sound))
 
         other_random = random.choice(other_sounds)
         play_sound(other_random)
       else:
-        if last_remoteTouchCount > remoteTouchCount:
+        if last_remoteTouchCount > pixelsOfRemoteTouchCount:
           pygame.mixer.music.fadeout(2000)
 
 
@@ -343,7 +346,7 @@ while True:
     #global remoteTouchCount
     if remoteTouchCount > 0:
       idle_start_time = millis() + 100000 # Not idle - setting it to future time
-      if remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT:
+      if pixelsOfRemoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT:
         if not inWinningState:
           pygame.mixer.music.stop()
           play_sound('both_sound16.wav')
@@ -352,7 +355,7 @@ while True:
         inWinningState = False
 
 
-    if last_remoteTouchCount == PIXEL_COUNT and remoteTouchCount < PIXEL_COUNT:
+    if last_remoteTouchCount == PIXEL_COUNT and pixelsOfRemoteTouchCount < PIXEL_COUNT:
       if touchCount == 0:
         pygame.mixer.music.fadeout(2000)
         idle_start_time = millis() # Setting idle state from remote touch
@@ -374,4 +377,4 @@ while True:
 #        q.put(MSG_TICK)
 #    previous_touched = touched
     last_touched = touched
-    last_remoteTouchCount = remoteTouchCount
+    last_remoteTouchCount = pixelsOfRemoteTouchCount
