@@ -172,9 +172,9 @@ def in_win(state, message):
         send_message(MSG_GOT_CHARGE_RELEASED)
         pygame.mixer.music.stop()
 
-def next_random_sound():
-    selected_random_sound = random.randint(0, len(my_sounds)-1)
-    selected_random_sound_file = my_sounds[selected_random_sound]
+def next_random_sound(sound_array):
+    selected_random_sound = random.randint(0, len(sound_array)-1)
+    selected_random_sound_file = sound_array[selected_random_sound]
     selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
     play_sound(selected_random_sound_file)
 
@@ -275,12 +275,12 @@ while True:
         if millis() - local_charging_started_time > 1:
             local_charging_started_time = millis()
             pygame.mixer.music.stop()
-            next_random_sound()
+            next_random_sound(my_sounds)
 
       # Already touching
       else:
         if not pygame.mixer.music.get_busy():
-          next_random_sound()
+          next_random_sound(my_sounds)
 
       touchCount = touchCount + GROWING_SPEED
       if touchCount > PIXEL_COUNT:
@@ -316,24 +316,20 @@ while True:
     # give preference to local interaction over remote interaction
     if touchCount == 0:
       #global remoteTouchCount
-      if last_remoteTouchCount == 0 and remoteTouchCount > 0:
+      if last_remoteTouchCount == 0 and pixelsOfRemoteTouchCount > 0:
         print('remote charging detected')
         pygame.mixer.music.stop()
         # We encode the other sound inside the remote number so for sound # 4 we send 4000
         # So if we light 50 leds it would be 4050
-        if remoteTouchCount > 1000:
-            other_sound = int(math.floor(remoteTouchCount / 1000))
-            play_sound('other_{}.wav'.format(other_sound))
-
-        other_random = random.choice(other_sounds)
-        play_sound(other_random)
+        other_sound = int(math.floor(remoteTouchCount / 1000))
+        play_sound('other_{}.wav'.format(other_sound))
       else:
         if last_remoteTouchCount > pixelsOfRemoteTouchCount:
           pygame.mixer.music.fadeout(2000)
 
 
     # both are touching - play other and my
-    if remoteTouchCount > 0 and touchCount > 0:
+    if pixelsOfRemoteTouchCount > 0 and touchCount > 0:
         global me_other_flag
         if not pygame.mixer.music.get_busy():
             me_other_flag = not me_other_flag
@@ -341,6 +337,13 @@ while True:
                 next_random_sound(other_sounds)
             else:
                 next_random_sound(my_sounds)
+
+    global pixelsOfRemoteTouchCount
+    if pixelsOfRemoteTouchCount > 0 and touchCount <=0:
+        if not pygame.mixer.music.get_busy():
+            # Getting the other sound to play TODO
+            other_sound = int(math.floor(remoteTouchCount / 1000))
+            play_sound('other_{}.wav'.format(other_sound))
 
     # handle winning state
     #global remoteTouchCount
