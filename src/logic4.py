@@ -173,6 +173,7 @@ def in_win(state, message):
         pygame.mixer.music.stop()
 
 def next_random_sound(sound_array):
+    global selected_random_sound
     selected_random_sound = random.randint(0, len(sound_array)-1)
     selected_random_sound_file = sound_array[selected_random_sound]
     selected_random_sound += 1 # To prevent zero based when multiplying 1000 with this
@@ -308,7 +309,8 @@ while True:
         touchCount = 0
     #send_message(touchCount)
     #global remoteTouchCount
-    ser.write("{} {}".format(touchCount, remoteTouchCount))
+    global pixelsOfRemoteTouchCount
+    ser.write("{} {}".format(touchCount, pixelsOfRemoteTouchCount))
     #print("{} {}".format(touchCount, remoteTouchCount))
     time.sleep(0.05)
     
