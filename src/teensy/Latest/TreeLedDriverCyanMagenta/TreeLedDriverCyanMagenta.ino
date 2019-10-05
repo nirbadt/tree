@@ -1,8 +1,14 @@
 #include <WS2812FX.h>
 
-#define STRIP_COUNT 3
+#define STRIP_COUNT 5
 #define VIRTUAL_STRIP_LENGTH 240
-#define VIRTUAL_STRIP_INDEX 2
+
+
+#define VIRTUAL_STRIP_RAINBOW_INDEX 2
+#define VIRTUAL_STRIP_INCOMING_INDEX 3
+#define VIRTUAL_STRIP_OUTGOING_INDEX 4
+
+
 #define RING_WIDTH 12
 
 #define MODE_OFF -1
@@ -13,17 +19,16 @@
 #define MIN_COMPLETION_VALUE 0
 #define MAX_COMPLETION_VALUE VIRTUAL_STRIP_LENGTH
 
- 
 
-// order: ring, fingers, strip rainbow, strip incoming, strip outcoming
+// order: ring, fingers, strip rainbow, strip incoming, strip outgoing
 
-int LED_COUNT[STRIP_COUNT] = {24, 6, 240};
+int LED_COUNT[STRIP_COUNT] = {24, 6, 240, 240, 240};
 int LED_PINS[STRIP_COUNT] = {5, 4, 3, 6, 7};
 
 
-//                             STBY               ACTIVE               WINNING
-int modes[][STRIP_COUNT] =   {{15, 15, 0},        {44, 3, 0},         {11, 11, 12}};
-long speeds[][STRIP_COUNT] = {{6000, 6000, 6000}, {750, 1500, 15000}, {10, 10, 10}};
+//                           STBY                              ACTIVE                           WINNING
+int modes[][STRIP_COUNT] =   {{15, 15, 0, 0, 0},               {44, 3, 0, 0, 0},                {11, 11, 12, 12, 12}};
+long speeds[][STRIP_COUNT] = {{6000, 6000, 6000, 6000, 6000}, {750, 1500, 15000, 15000, 15000}, {10, 10, 10, 10, 10}};
 int _stripMode = MODE_OFF;
 
 int _local = 0;
@@ -35,7 +40,9 @@ int effectCounter = 0;
 WS2812FX strips[STRIP_COUNT] = {
   WS2812FX(LED_COUNT[0], LED_PINS[0], NEO_GRB + NEO_KHZ800),
   WS2812FX(LED_COUNT[1], LED_PINS[1], NEO_GRB + NEO_KHZ800),
-  WS2812FX(LED_COUNT[2], LED_PINS[2], NEO_GRB + NEO_KHZ800)
+  WS2812FX(LED_COUNT[VIRTUAL_STRIP_RAINBOW_INDEX], LED_PINS[VIRTUAL_STRIP_RAINBOW_INDEX], NEO_GRB + NEO_KHZ800),
+  WS2812FX(LED_COUNT[VIRTUAL_STRIP_INCOMING_INDEX], LED_PINS[VIRTUAL_STRIP_INCOMING_INDEX], NEO_GRB + NEO_KHZ800),
+  WS2812FX(LED_COUNT[VIRTUAL_STRIP_OUTGOING_INDEX], LED_PINS[VIRTUAL_STRIP_OUTGOING_INDEX], NEO_GRB + NEO_KHZ800)
 };
 
 void setup() {
@@ -45,6 +52,7 @@ void setup() {
     strips[i].init();
     strips[i].setBrightness(30);
     strips[i].setColor(0x00FFFF);//Cyan
+    // strips[i].setColor(0xFF00FF);//Magenta
   }
   Serial.println("Ready. your indices are my command. or maybe the other way around. ~~~");
 }
@@ -58,14 +66,13 @@ void loop() {
       strips[i].service();
     }
     else {
-      //for(int i = 0; i < VIRTUAL_STRIP_LENGTH; ++i) {
       for (int i = 0; i < _local; ++i) {
         updateLocalVirtualPixelColor(i, strips[0].Color(0,255,255));//Cyan 
+        // updateLocalVirtualPixelColor(i, strips[0].Color(255,0,255));//Magenta 
       }
       int localStart = constrain(localVirtualEffectIndex - RING_WIDTH / 2, 0, _local);
       int localEnd = constrain(localVirtualEffectIndex + RING_WIDTH / 2, 0, _local);
       for (int i = localStart ; i < localEnd ; ++i) {
-        // int intensity = constrain(((i - localStart) < RING_WIDTH/2) ? (i-localStart) * 10 : 255 - (i-localStart) * 10, 0, 255);
         int intensity = constrain((i - localStart) * 10, 0, 255);
         updateLocalVirtualPixelColor(i, strips[0].Color(intensity, intensity, intensity));
       }
@@ -73,6 +80,7 @@ void loop() {
         updateLocalVirtualPixelColor(i, 0);
       }
       for (int i = 0; i < _remote; ++i) {
+        // updateLocalVirtualPixelColor(i, strips[0].Color(0,255,255));//Cyan 
         updateRemoteVirtualPixelColor(i, strips[0].Color(255, 0, 255)); //Magenta 
       }
       int remoteStart = constrain(remoteVirtualEffectIndex - RING_WIDTH / 2, 0, _remote);
@@ -85,7 +93,7 @@ void loop() {
       for (int i = _remote; i < VIRTUAL_STRIP_LENGTH; ++i) {
         updateRemoteVirtualPixelColor(i, 0);
       }
-      strips[VIRTUAL_STRIP_INDEX].show();
+      strips[VIRTUAL_STRIP_RAINBOW_INDEX].show();
       if (effectCounter++ % 3 == 0) {
         localVirtualEffectIndex = (localVirtualEffectIndex + 1) % _local;
         remoteVirtualEffectIndex = (remoteVirtualEffectIndex + 1) % _remote;
@@ -159,9 +167,9 @@ void setStripMode(int modee) {
 }
 
 void updateLocalVirtualPixelColor(int idx, uint32_t col) {
-  strips[VIRTUAL_STRIP_INDEX].setPixelColor(idx - idx % 2, col);
+  strips[VIRTUAL_STRIP_OUTGOING_INDEX].setPixelColor(idx, col);
 }
 
 void updateRemoteVirtualPixelColor(int idx, uint32_t col) {
-  strips[VIRTUAL_STRIP_INDEX].setPixelColor(VIRTUAL_STRIP_LENGTH - 1 - (idx - idx % 2), col);
+  strips[VIRTUAL_STRIP_INCOMING_INDEX].setPixelColor(idx, col);
 }
