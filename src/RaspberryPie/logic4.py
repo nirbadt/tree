@@ -10,11 +10,13 @@ import pygame
 from subprocess import call
 
 SERIAL_PORT = '/dev/ttyACM0'
+MP3_PATH = "/home/pi/tree/sounds/"
+
 # SERIAL_PORT = '/dev/ttyACM0'
 
 
 # PIXEL_COUNT = 240
-PIXEL_COUNT = 500
+PIXEL_COUNT = 480
 GROWING_SPEED = 6
 SHRINKING_SPEED = 6
 
@@ -63,8 +65,6 @@ TICK_TIME = 0.1
 
 
 BLYNK_AUTH = 'ac4b8c5b7ece4a23b60e62733cf6d6fc'
-
-MP3_PATH = "/home/pi/tree/sounds/"
 
 
 class State:
@@ -300,14 +300,23 @@ while True:
 
     REAL_LEN = PIXEL_COUNT / 2
 
-    ledsTouchCount = touchCount if touchCount < REAL_LEN else REAL_LEN
+    # ledsTouchCount = touchCount - 1 if touchCount < REAL_LEN else REAL_LEN
+
+    if touchCount < REAL_LEN:
+        ledsTouchCount = touchCount - 1
+    elif touchCount == REAL_LEN:
+        ledsTouchCount = REAL_LEN - 1
+    elif ledsTouchCount == PIXEL_COUNT:
+        ledsTouchCount = REAL_LEN
 
     ledsRemoteTouchCount = (
         remoteTouchCount - REAL_LEN) if remoteTouchCount > REAL_LEN else 0
 
+    print("ledsRemoteTouchCount:", ledsRemoteTouchCount)
+
     ser.write("{} {}".format(ledsTouchCount, ledsRemoteTouchCount))
     # ser.write("{} {}".format(touchCount, remoteTouchCount))
-    print("{} {}".format(touchCount, remoteTouchCount))
+    # print("{} {}".format(ledsTouchCount, ledsRemoteTouchCount))
     time.sleep(0.05)
 
     # other end incoming sound handling:

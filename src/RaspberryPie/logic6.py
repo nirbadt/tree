@@ -10,7 +10,7 @@ import pygame
 from subprocess import call
 
 
-PIXEL_COUNT = 500
+PIXEL_COUNT = 480
 REAL_LEN = PIXEL_COUNT // 2
 GROWING_SPEED = 6
 SHRINKING_SPEED = 6
@@ -96,10 +96,9 @@ t2 = threading.Thread(target=blynk_thread)
 t2.daemon = True
 t2.start()
 
-MP3_PATH = "/home/pi/tree/sounds/"
 def music_play(track):
     pygame.mixer.music.stop()
-    pygame.mixer.music.load(MP3_PATH + track + ".wav")
+    pygame.mixer.music.load("/home/pi/tree/sounds/" + track + ".wav")
     pygame.mixer.music.play()
 
 
