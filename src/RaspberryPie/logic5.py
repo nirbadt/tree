@@ -87,64 +87,6 @@ def to_state(state, new_state):
     state.state_start_millis = millis()
 
 
-def in_standby(state, message):
-    if message == 'touch':
-        to_state(state, 'charging')
-        music_play("my_sound16")
-    elif message == 'got_invited':
-        music_play("other_sound16")
-        to_state(state, 'been_invited')
-
-
-def in_charging(state, message):
-    if message == 'release':
-        to_state(state, 'standby')
-        music_stop()
-    elif message == 'tick':
-        elapsed_time = millis() - state.state_start_millis
-        if elapsed_time > CHARGE_TIME:
-            to_state(state, 'charged')
-            music_play("other_sound16")
-            send_message('got_invited')
-
-    elif message == 'got_invited':
-        to_state(state, 'win')
-        music_play("both_sound16")
-
-
-def in_charged(state, message):
-    if message == 'release':
-        state.release_start_millis = millis()
-    elif message == 'got_win' or 'got_invited':
-        to_state(state, 'win')
-        send_message('got_win')
-        music_play("both_sound16")
-    elif message == 'tick':
-        if state.release_start_millis:
-            elapsed_time = millis() - state.release_start_millis
-            # print "elapsed time is" + elapsed_time + "\n"
-            if elapsed_time > CHARGE_RELEASE_TIME:
-                to_state(state, 'standby')
-                music_stop()
-                state.release_start_millis = None
-                send_message('got_charge_released')
-
-
-def in_been_invited(state, message):
-    if message == 'touch' or 'got_win':
-        to_state(state, 'win')
-        music_play("both_sound16")
-    elif message == 'got_charge_released':
-        to_state(state, 'standby')
-        music_stop()
-
-
-def in_win(state, message):
-    if message == 'release' or 'got_charge_released':
-        to_state(state, 'standby')
-        send_message('got_charge_released')
-        music_stop()
-
 
 class State:
     def __init__(self):
