@@ -12,9 +12,7 @@ from subprocess import call
 SERIAL_PORT = '/dev/ttyACM0'
 #SERIAL_PORT = '/dev/ttyACM0'
 
-
-# PIXEL_COUNT = 240
-PIXEL_COUNT = 480
+PIXEL_COUNT = 240
 GROWING_SPEED = 3
 SHRINKING_SPEED = 6
 
@@ -275,11 +273,7 @@ while True:
         touchCount = 0
     #send_message(touchCount)
     #global remoteTouchCount
-    
-    ledsTouchCount = touchCount if touchCount < PIXEL_COUNT / 2 else PIXEL_COUNT / 2
-    ledsRemoteTouchCount = (remoteTouchCount - PIXEL_COUNT / 2) if remoteTouchCount > PIXEL_COUNT / 2 else 0
-    ser.write("{} {}".format(ledsTouchCount, ledsRemoteTouchCount))
-    # ser.write("{} {}".format(touchCount, remoteTouchCount))
+    ser.write("{} {}".format(touchCount, remoteTouchCount))
     #print("{} {}".format(touchCount, remoteTouchCount))
     time.sleep(0.05)
     
