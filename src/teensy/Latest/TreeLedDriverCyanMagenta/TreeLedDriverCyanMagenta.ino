@@ -1,4 +1,3 @@
-// #define REDUCED_MODES // sketch is too big for Arduino w/32k flash, so invoke reduced modes
 #include <WS2812FX.h>
 
 #define STRIP_COUNT 3
@@ -38,14 +37,12 @@ WS2812FX strips[STRIP_COUNT] = {
 void setup() {
   Serial.begin(115200);
   Serial.setTimeout(5);
-  Serial1.begin(9600);
   for (int i = 0; i < STRIP_COUNT; ++i) {
     strips[i].init();
     strips[i].setBrightness(30);
     strips[i].setColor(0x00FFFF);//Cyan
   }
   Serial.println("Ready. your indices are my command. or maybe the other way around. ~~~");
-  Serial1.println("Ready. your indices are my command. or maybe the other way around. ~~~");
 }
 
 int localVirtualEffectIndex = 0;
@@ -54,7 +51,6 @@ int remoteVirtualEffectIndex = 0;
 void loop() {
   for (int i = 0; i < STRIP_COUNT; ++i) {
     if (strips[i].isRunning()) {
-      //      Serial1.println(String(i) + " is running");
       strips[i].service();
     }
     else {
@@ -110,15 +106,6 @@ void serialEvent() {
   }
 }
 
-//void serialEvent1() {
-//  if (Serial1.available()) {
-//    char inChar = (char) Serial1.read();
-//    handleCommand(inChar);
-//    while (Serial.available()) {
-//      Serial.read();
-//    }
-//  }
-//}
 boolean isActive = false;
 
 void handleCommand(int local, int remote) {
@@ -138,21 +125,17 @@ void handleCommand(int local, int remote) {
 
 void setStripMode(int modee, boolean updateVirtual) {
   _stripMode = modee;
-  //  Serial1.println(String("setStripMode: ") + modee + ", virtual: " + updateVirtual);
   if (modee == MODE_OFF) {
     for (int i = 0; i < STRIP_COUNT; ++i) {
-      // strips[i].setBrightness(30);
-      // strips[i].setColor(0x007BFF);
       strips[i].setSpeed(100);
       strips[i].setMode(0);
       strips[i].strip_off();
       strips[i].stop();
-      //      _last_modes[i] = modes[modee][i];
     }
   }
   else {
     for (int i = 0; i < STRIP_COUNT; ++i) {
-      if (/* modes[modee][i] && */ _last_modes[i] != modes[modee][i]) {
+      if ( _last_modes[i] != modes[modee][i]) {
         strips[i].setSpeed(speeds[modee][i]);
         strips[i].setMode(modes[modee][i]);
         if(modes[modee][i]) {
