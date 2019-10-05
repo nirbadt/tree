@@ -39,9 +39,8 @@ ser = serial.Serial(SERIAL_PORT)
 ser.baudrate = 115200
 pygame.mixer.init()
 
-mp3 = pygame.mixer.music
-mp3.load("sounds/match1.wav")
-mp3.play()
+pygame.mixer.music.load("sounds/match1.wav")
+pygame.mixer.music.play()
 
 cap = MPR121.MPR121()
 if not cap.begin(busnum=1):
@@ -91,51 +90,42 @@ def to_state(state, new_state):
 def in_standby(state, message):
     if message == 'touch':
         to_state(state, 'charging')
-        mp3.load("my_sound16.wav")
-        mp3.play()
+        music_play("my_sound16")
     elif message == 'got_invited':
+        music_play("other_sound16")
         to_state(state, 'been_invited')
-        mp3.load("other_sound16.wav")
-        mp3.play()
 
 
 def in_charging(state, message):
     if message == 'release':
         to_state(state, 'standby')
-        mp3.stop()
+        music_stop()
     elif message == 'tick':
         elapsed_time = millis() - state.state_start_millis
         if elapsed_time > CHARGE_TIME:
             to_state(state, 'charged')
-            mp3.load("other_sound16.wav")
-            mp3.play()
+            music_play("other_sound16")
             send_message('got_invited')
 
     elif message == 'got_invited':
         to_state(state, 'win')
-        mp3.load("both_sound16.wav")
-        mp3.play()
+        music_play("both_sound16")
 
 
 def in_charged(state, message):
     if message == 'release':
         state.release_start_millis = millis()
-    elif message == 'got_win':
-        to_state(state, 'win')
-        mp3.load("both_sound16.wav")
-        mp3.play()
-    elif message == 'got_invited':
+    elif message == 'got_win' or 'got_invited':
         to_state(state, 'win')
         send_message('got_win')
-        mp3.load("both_sound16.wav")
-        mp3.play()
+        music_play("both_sound16")
     elif message == 'tick':
         if state.release_start_millis:
             elapsed_time = millis() - state.release_start_millis
             # print "elapsed time is" + elapsed_time + "\n"
             if elapsed_time > CHARGE_RELEASE_TIME:
                 to_state(state, 'standby')
-                mp3.stop()
+                music_stop()
                 state.release_start_millis = None
                 send_message('got_charge_released')
 
@@ -143,18 +133,17 @@ def in_charged(state, message):
 def in_been_invited(state, message):
     if message == 'touch' or 'got_win':
         to_state(state, 'win')
-        mp3.load("both_sound16.wav")
-        mp3.play()
+        music_play("both_sound16")
     elif message == 'got_charge_released':
         to_state(state, 'standby')
-        mp3.stop()
+        music_stop()
 
 
 def in_win(state, message):
     if message == 'release' or 'got_charge_released':
         to_state(state, 'standby')
         send_message('got_charge_released')
-        mp3.stop()
+        music_stop()
 
 
 class State:
@@ -198,13 +187,13 @@ t2.start()
 
 
 def music_play(track):
-    mp3.stop()
-    mp3.load(track + ".wav")
-    mp3.play()
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load(track + ".wav")
+    pygame.mixer.music.play()
 
 
 def music_stop():
-    mp3.fadeout(2000)
+    pygame.mixer.music.fadeout(2000)
 
 
 while True:
