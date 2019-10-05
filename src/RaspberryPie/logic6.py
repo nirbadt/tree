@@ -71,7 +71,7 @@ def v1_write_handler(value):
 
 def publish_touch_count():
     while True:
-        global touchCount
+        # global touchCount
         call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
               "/update/V{0}?value={1}".format(OTHER_TREE_ID, touchCount)])
 

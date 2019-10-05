@@ -35,7 +35,7 @@ print('initializing sound')
 pygame.mixer.init()
 print('sound initialized')
 
-pygame.mixer.music.load("match1.wav")
+pygame.mixer.music.load(MP3_PATH + "match1.wav")
 pygame.mixer.music.play()
 
 MSG_TOUCH = 'touch'
@@ -61,7 +61,10 @@ CHARGE_RELEASE_TIME = 0.5
 CHARGE_TIME = 7
 TICK_TIME = 0.1
 
+
 BLYNK_AUTH = 'ac4b8c5b7ece4a23b60e62733cf6d6fc'
+
+MP3_PATH = "/home/pi/tree/sounds/"
 
 
 class State:
@@ -104,11 +107,11 @@ def to_state(state, new_state, LED_state):
 def in_standby(state, message):
     if message == MSG_TOUCH:
         to_state(state, ST_CHARGING, LED_CHARGING)
-        pygame.mixer.music.load("my_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "my_sound16.wav")
         pygame.mixer.music.play()
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_BEEN_INVITED, LED_BEEN_INVITED)
-        pygame.mixer.music.load("other_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "other_sound16.wav")
         pygame.mixer.music.play()
 
 
@@ -120,13 +123,13 @@ def in_charging(state, message):
         elapsed_time = millis() - state.state_start_millis
         if elapsed_time > CHARGE_TIME:
             to_state(state, ST_CHARGED, LED_CHARGED)
-            pygame.mixer.music.load("other_sound16.wav")
+            pygame.mixer.music.load(MP3_PATH + "other_sound16.wav")
             pygame.mixer.music.play()
             send_message(MSG_GOT_INVITED)
 
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
         pygame.mixer.music.play()
 
 
@@ -135,12 +138,12 @@ def in_charged(state, message):
         state.release_start_millis = millis()
     elif message == MSG_GOT_WIN:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
         pygame.mixer.music.play()
     elif message == MSG_GOT_INVITED:
         to_state(state, ST_WIN, LED_WIN)
         send_message(MSG_GOT_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
         pygame.mixer.music.play()
     elif message == MSG_TICK:
         if state.release_start_millis:
@@ -156,12 +159,12 @@ def in_charged(state, message):
 def in_been_invited(state, message):
     if message == MSG_TOUCH:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
         pygame.mixer.music.play()
         send_message(MSG_GOT_WIN)
     elif message == MSG_GOT_WIN:
         to_state(state, ST_WIN, LED_WIN)
-        pygame.mixer.music.load("both_sound16.wav")
+        pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
         pygame.mixer.music.play()
     elif message == MSG_GOT_CHARGE_RELEASED:
         to_state(state, ST_STANDBY, LED_STANDBY)
@@ -270,7 +273,7 @@ while True:
         if last_touched == False:
             print 'local charging started'
             pygame.mixer.music.stop()
-            pygame.mixer.music.load("my_sound16.wav")
+            pygame.mixer.music.load(MP3_PATH + "my_sound16.wav")
             pygame.mixer.music.play()
 
         touchCount = touchCount + GROWING_SPEED
@@ -280,13 +283,13 @@ while True:
         if last_touched == True:
             print 'local charging stopped'
             pygame.mixer.music.stop()
-            pygame.mixer.music.load("my_sound16_reversed2.wav")
+            pygame.mixer.music.load(MP3_PATH + "my_sound16_reversed2.wav")
             pygame.mixer.music.play()
 
         if touchCount > 0 and touchCount <= SHRINKING_SPEED:
             print 'local discharging ended'
             pygame.mixer.music.fadeout(2000)
-            # pygame.mixer.music.load("")
+            # pygame.mixer.music.load(MP3_PATH + "")
             # pygame.mixer.music.play()
 
         touchCount = touchCount - SHRINKING_SPEED
@@ -314,7 +317,7 @@ while True:
         if last_remoteTouchCount == 0 and remoteTouchCount > 0:
             print 'remote charging detected'
             pygame.mixer.music.stop()
-            pygame.mixer.music.load("other_sound16.wav")
+            pygame.mixer.music.load(MP3_PATH + "other_sound16.wav")
             pygame.mixer.music.play()
         else:
             if last_remoteTouchCount > remoteTouchCount:
@@ -325,7 +328,7 @@ while True:
     if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
         if inWinningState == False:
             pygame.mixer.music.stop()
-            pygame.mixer.music.load("both_sound16.wav")
+            pygame.mixer.music.load(MP3_PATH + "both_sound16.wav")
             pygame.mixer.music.play()
             inWinningState = True
         else:
@@ -336,7 +339,7 @@ while True:
             pygame.mixer.music.fadeout(2000)
         else:
             pygame.mixer.music.stop()
-            pygame.mixer.music.load("my_sound16.wav")
+            pygame.mixer.music.load(MP3_PATH + "my_sound16.wav")
             pygame.mixer.music.play()
 
 #    elapsed_time = millis() - last_tick
