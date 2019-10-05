@@ -10,7 +10,7 @@ import pygame
 from subprocess import call
 
 
-PIXEL_COUNT = 240
+PIXEL_COUNT = 480
 GROWING_SPEED = 3
 SHRINKING_SPEED = 6
 
@@ -80,14 +80,6 @@ def millis():
     return time.time()
 
 
-def to_state(state, new_state):
-    state.current = new_state
-    print("Changing state to " + new_state + "\n")
-    state.release_start_millis = None
-    state.state_start_millis = millis()
-
-
-
 class State:
     def __init__(self):
         self.current = 'standby'
@@ -148,8 +140,8 @@ while True:
             music_play("my_sound16")
 
         touchCount = touchCount + GROWING_SPEED
-        if touchCount > PIXEL_COUNT * 2:
-            touchCount = PIXEL_COUNT * 2
+        if touchCount > PIXEL_COUNT:
+            touchCount = PIXEL_COUNT
     else:
         if last_touched == True:  # print 'local charging stopped'
             music_play("my_sound16_reversed2")
@@ -173,14 +165,14 @@ while True:
 
     # handle winning state
     if remoteTouchCount > 0:
-        if (remoteTouchCount == PIXEL_COUNT * 2 and touchCount == PIXEL_COUNT * 2):
+        if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
             if inWinningState == False:
                 music_play("both_sound16")
                 inWinningState = True
         else:
             inWinningState = False
 
-    if last_remoteTouchCount == PIXEL_COUNT * 2 and remoteTouchCount < PIXEL_COUNT * 2:
+    if last_remoteTouchCount == PIXEL_COUNT and remoteTouchCount < PIXEL_COUNT:
         if touchCount == 0:
             music_stop()
         else:
