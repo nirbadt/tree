@@ -24,12 +24,12 @@ BLYNK_AUTH = 'ac4b8c5b7ece4a23b60e62733cf6d6fc'
 
 host_name = str(subprocess.check_output(['hostname']))
 TREE_ID = 0 if 'papa' in host_name else 1
+OTHER_TREE_ID = TREE_ID ^ 1
 
 
 touchCount = 0
 remoteTouchCount = 0
 
-last_tick = millis()
 last_touched = False
 last_remoteTouchCount = 0
 inWinningState = False
@@ -69,34 +69,13 @@ def v1_write_handler(value):
         #print("V1 Got value: " + remoteTouchCount + "\n")
 
 
-def send_message(message):
-    #print ("Sending message: " + message + "\n")
-    other_tree_id = TREE_ID ^ 1
-    call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
-          "/update/V{0}?value={1}".format(other_tree_id, message)])
-
-
-def millis():
-    return time.time()
-
-
-class State:
-    def __init__(self):
-        self.current = 'standby'
-        self.state_start_millis = None
-        self.release_start_millis = None
-
-
-def state_machine_thread(q):
-    state = State()
-    last_state = 'standby'
+def publish_touch_count():
     while True:
         global touchCount
-        send_message(touchCount)
+        call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
+          "/update/V{0}?value={1}".format(OTHER_TREE_ID, touchCount)])
+        
         time.sleep(0.5)
-        if state.current != last_state:
-            print("Now in state: " + state.current + "\n")
-            last_state = state.current
 
 
 def blynk_thread():
@@ -109,9 +88,7 @@ def blynk_thread():
             print(message)
 
 
-q = Queue.Queue()
-
-t1 = threading.Thread(target=state_machine_thread, args=(q,))
+t1 = threading.Thread(target=publish_touch_count)
 t1.daemon = True
 t1.start()
 
