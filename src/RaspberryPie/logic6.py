@@ -10,8 +10,9 @@ import pygame
 from subprocess import call
 
 
-PIXEL_COUNT = 480
-GROWING_SPEED = 3
+PIXEL_COUNT = 500
+REAL_LEN = PIXEL_COUNT // 2
+GROWING_SPEED = 6
 SHRINKING_SPEED = 6
 
 CHARGE_RELEASE_TIME = 0.5
@@ -38,7 +39,7 @@ ser = serial.Serial(SERIAL_PORT)
 ser.baudrate = 115200
 pygame.mixer.init()
 
-pygame.mixer.music.load("sounds/match1.wav")
+pygame.mixer.music.load("match1.wav")
 pygame.mixer.music.play()
 
 cap = MPR121.MPR121()
@@ -72,8 +73,8 @@ def publish_touch_count():
     while True:
         global touchCount
         call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
-          "/update/V{0}?value={1}".format(OTHER_TREE_ID, touchCount)])
-        
+              "/update/V{0}?value={1}".format(OTHER_TREE_ID, touchCount)])
+
         time.sleep(0.5)
 
 
@@ -140,13 +141,12 @@ while True:
                 music_stop()
 
     # handle winning state
-    if remoteTouchCount > 0:
-        if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
-            if inWinningState == False:
-                music_play("both_sound16")
-                inWinningState = True
-        else:
-            inWinningState = False
+    if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
+        if inWinningState == False:
+            music_play("both_sound16")
+            inWinningState = True
+    else:
+        inWinningState = False
 
     if last_remoteTouchCount == PIXEL_COUNT and remoteTouchCount < PIXEL_COUNT:
         if touchCount == 0:
@@ -156,8 +156,9 @@ while True:
 
     last_touched = touched
     last_remoteTouchCount = remoteTouchCount
-    
-    l_touch = touchCount if touchCount < PIXEL_COUNT else PIXEL_COUNT
-    r_touch = (remoteTouchCount - PIXEL_COUNT) if remoteTouchCount > PIXEL_COUNT else 0
-    
-    ser.write("{} {}".format(l_touch, r_touch))
+
+    local_touch = touchCount if touchCount < REAL_LEN else REAL_LEN
+    # remote_touch = (remoteTouchCount - REAL_LEN ) if remoteTouchCount > REAL_LEN  else 0
+    remote_touch = 0 if remoteTouchCount < REAL_LEN else remoteTouchCount - REAL_LEN
+
+    ser.write("{} {}".format(local_touch, remote_touch))
