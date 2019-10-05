@@ -13,10 +13,14 @@
 #define MIN_COMPLETION_VALUE 0
 #define MAX_COMPLETION_VALUE VIRTUAL_STRIP_LENGTH
 
-int LED_COUNT[STRIP_COUNT] = {24, 6, 240};
-int LED_PINS[STRIP_COUNT] = {5, 4, 3};
+ 
 
-// order: ring, fingers, stems
+// order: ring, fingers, strip rainbow, strip incoming, strip outcoming
+
+int LED_COUNT[STRIP_COUNT] = {24, 6, 240};
+int LED_PINS[STRIP_COUNT] = {5, 4, 3, 6, 7};
+
+
 //                             STBY               ACTIVE               WINNING
 int modes[][STRIP_COUNT] =   {{15, 15, 0},        {44, 3, 0},         {11, 11, 12}};
 long speeds[][STRIP_COUNT] = {{6000, 6000, 6000}, {750, 1500, 15000}, {10, 10, 10}};
@@ -161,5 +165,3 @@ void updateLocalVirtualPixelColor(int idx, uint32_t col) {
 void updateRemoteVirtualPixelColor(int idx, uint32_t col) {
   strips[VIRTUAL_STRIP_INDEX].setPixelColor(VIRTUAL_STRIP_LENGTH - 1 - (idx - idx % 2), col);
 }
-
-
