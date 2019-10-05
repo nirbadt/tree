@@ -171,5 +171,5 @@ void updateLocalVirtualPixelColor(int idx, uint32_t col) {
 }
 
 void updateRemoteVirtualPixelColor(int idx, uint32_t col) {
-  strips[VIRTUAL_STRIP_INCOMING_INDEX].setPixelColor(idx, col);
+  strips[VIRTUAL_STRIP_INCOMING_INDEX].setPixelColor(VIRTUAL_STRIP_LENGTH - 1 - idx, col);
 }
