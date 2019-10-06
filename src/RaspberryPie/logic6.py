@@ -148,7 +148,7 @@ while True:
         RAINBOW = False
 
     if px_remote_prev == PIXEL_COUNT and px_remote < PIXEL_COUNT:
-        if px_local == 0 or PIXEL_COUNT:
+        if px_local == 0 or px_local == PIXEL_COUNT:
             music_stop()
         else:
             music_play("my_sound16")
