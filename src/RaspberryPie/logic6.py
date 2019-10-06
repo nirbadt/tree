@@ -137,7 +137,7 @@ while True:
     # other end incoming sound handling:
     # give preference to local interaction over remote interaction
     if px_local == 0:
-        if px_remote_prev == 0 and px_remote > 0:  # print 'remote charging detected'
+        if px_remote_prev <= PIXEL_COUNT and px_remote > PIXEL_COUNT:  # print 'remote charging detected'
             music_play("other_sound16")
         else:
             if px_remote_prev > px_remote:
@@ -152,7 +152,7 @@ while True:
         RAINBOW = False
 
     if px_remote_prev == PIXEL_COUNT and px_remote < PIXEL_COUNT:
-        if px_local == 0:
+        if px_local == 0 or PIXEL_COUNT:
             music_stop()
         else:
             music_play("my_sound16")
