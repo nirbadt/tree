@@ -11,7 +11,6 @@ from subprocess import call
 
 
 PIXEL_COUNT = 480
-REAL_LEN = PIXEL_COUNT // 2
 GROWING_SPEED = 6
 SHRINKING_SPEED = 6
 
@@ -26,31 +25,35 @@ host_name = str(subprocess.check_output(['hostname']))
 TREE_ID_LOCAL = 0 if 'papa' in host_name else 1
 TREE_ID_REMOTE = TREE_ID_LOCAL ^ 1
 
+REAL_LEN = PIXEL_COUNT // 2
 
 px_local = 0
 px_remote = 0
+px_remote_prev = 0
 
 touch_state_prev = False
-px_remote_prev = 0
 RAINBOW = False
 
-print('initializing')
-ser = serial.Serial(SERIAL_PORT)
-ser.baudrate = 115200
-pygame.mixer.init()
+try: 
+    print('initializing..')
+    ser = serial.Serial(SERIAL_PORT)
+    ser.baudrate = 115200
+    pygame.mixer.init()
+    cap = MPR121.MPR121()
+    cap.begin(busnum=1)
+    blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
+except IOError as e:
+    print("Hardware init failure")
+    print(e)
+    exit
+    
+
+print("Initialized. Tree number is: ", TREE_ID_LOCAL)
+
 
 pygame.mixer.music.load("match1.wav")
 pygame.mixer.music.play()
 
-cap = MPR121.MPR121()
-if not cap.begin(busnum=1):
-    print('Error initializing MPR121.')
-    sys.exit(1)
-
-blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
-
-
-print("Initialized. Tree number is: " + str(TREE_ID_LOCAL) + "\n")
 
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
@@ -71,10 +74,11 @@ def v1_write_handler(value):
 def publish_touch_count():
     while True:
         try:
-            call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +  "/update/V{0}?value={1}".format(TREE_ID_REMOTE, px_local)])
+            call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
+                  "/update/V{0}?value={1}".format(TREE_ID_REMOTE, px_local)])
         except Exception as ex:
             print(ex)
-       
+
         time.sleep(0.5)
 
 
@@ -105,13 +109,6 @@ def music_play(track):
 
 def music_stop():
     pygame.mixer.music.fadeout(2000)
-    
-    
-try:
-  print(blynk.log)
-except:
-    print("blynk.log is not printable")
-
 
 
 while True:
@@ -146,9 +143,9 @@ while True:
             if px_remote_prev > px_remote:
                 music_stop()
 
-    # handle winning state
-    if (px_remote == PIXEL_COUNT and px_local == PIXEL_COUNT):
-        if RAINBOW == False:
+    #RAINBOW
+    if (px_remote == px_local == PIXEL_COUNT):
+        if not RAINBOW:
             music_play("both_sound16")
             RAINBOW = True
     else:
@@ -172,5 +169,5 @@ while True:
     leds_px_remote = 0 if px_remote < REAL_LEN else px_remote - REAL_LEN
 
     ser.write("{} {}".format(leds_px_local, leds_px_remote))
-    print("Real values:       {} {}".format(px_local, px_remote))
-    print("Sending to teensy: {} {}".format(leds_px_local, leds_px_remote))
+    # print("Real values:       {} {}".format(px_local, px_remote))
+    # print("Sending to teensy: {} {}".format(leds_px_local, leds_px_remote))
