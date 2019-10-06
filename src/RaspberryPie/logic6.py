@@ -27,11 +27,11 @@ TREE_ID_LOCAL = 0 if 'papa' in host_name else 1
 TREE_ID_REMOTE = TREE_ID_LOCAL ^ 1
 
 
-touch_local = 0
-touch_remote = 0
+px_local = 0
+px_remote = 0
 
 touch_state_prev = False
-touch_remote_prev = 0
+px_remote_prev = 0
 RAINBOW = False
 
 print('initializing')
@@ -55,23 +55,23 @@ print("Initialized. Tree number is: " + str(TREE_ID_LOCAL) + "\n")
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
     if TREE_ID_LOCAL == 0:
-        global touch_remote
-        touch_remote = int(value)
-        #print("V0 Got value: " + touch_remote + "\n")
+        global px_remote
+        px_remote = int(value)
+        #print("V0 Got value: " + px_remote + "\n")
 
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
     if TREE_ID_LOCAL == 1:
-        global touch_remote
-        touch_remote = int(value)
-        #print("V1 Got value: " + touch_remote + "\n")
+        global px_remote
+        px_remote = int(value)
+        #print("V1 Got value: " + px_remote + "\n")
 
 
 def publish_touch_count():
     while True:
         try:
-            call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +  "/update/V{0}?value={1}".format(TREE_ID_REMOTE, touch_local)])
+            call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +  "/update/V{0}?value={1}".format(TREE_ID_REMOTE, px_local)])
         except Exception as ex:
             print(ex)
        
@@ -123,54 +123,54 @@ while True:
         if touch_state_prev == False:  # print 'local charging started'
             music_play("my_sound16")
 
-        touch_local = touch_local + GROWING_SPEED
-        if touch_local > PIXEL_COUNT:
-            touch_local = PIXEL_COUNT
+        px_local = px_local + GROWING_SPEED
+        if px_local > PIXEL_COUNT:
+            px_local = PIXEL_COUNT
     else:
         if touch_state_prev == True:  # print 'local charging stopped'
             music_play("my_sound16_reversed2")
 
-        if touch_local > 0 and touch_local <= SHRINKING_SPEED:  # print 'local discharging ended'
+        if px_local > 0 and px_local <= SHRINKING_SPEED:  # print 'local discharging ended'
             music_stop()
 
-        touch_local = touch_local - SHRINKING_SPEED
-        if touch_local < 0:
-            touch_local = 0
+        px_local = px_local - SHRINKING_SPEED
+        if px_local < 0:
+            px_local = 0
 
     # other end incoming sound handling:
     # give preference to local interaction over remote interaction
-    if touch_local == 0:
-        if touch_remote_prev == 0 and touch_remote > 0:  # print 'remote charging detected'
+    if px_local == 0:
+        if px_remote_prev == 0 and px_remote > 0:  # print 'remote charging detected'
             music_play("other_sound16")
         else:
-            if touch_remote_prev > touch_remote:
+            if px_remote_prev > px_remote:
                 music_stop()
 
     # handle winning state
-    if (touch_remote == PIXEL_COUNT and touch_local == PIXEL_COUNT):
+    if (px_remote == PIXEL_COUNT and px_local == PIXEL_COUNT):
         if RAINBOW == False:
             music_play("both_sound16")
             RAINBOW = True
     else:
         RAINBOW = False
 
-    if touch_remote_prev == PIXEL_COUNT and touch_remote < PIXEL_COUNT:
-        if touch_local == 0:
+    if px_remote_prev == PIXEL_COUNT and px_remote < PIXEL_COUNT:
+        if px_local == 0:
             music_stop()
         else:
             music_play("my_sound16")
 
     touch_state_prev = touch_state
-    touch_remote_prev = touch_remote
+    px_remote_prev = px_remote
 
-    leds_local = touch_local
-    if touch_local == PIXEL_COUNT:
-        leds_local = REAL_LEN
-    elif touch_local >= REAL_LEN:
-        leds_local = REAL_LEN - 1
+    leds_px_local = px_local
+    if px_local == PIXEL_COUNT:
+        leds_px_local = REAL_LEN
+    elif px_local >= REAL_LEN:
+        leds_px_local = REAL_LEN - 1
 
-    leds_remote = 0 if touch_remote < REAL_LEN else touch_remote - REAL_LEN
+    leds_px_remote = 0 if px_remote < REAL_LEN else px_remote - REAL_LEN
 
-    ser.write("{} {}".format(leds_local, leds_remote))
-    print("Sending to teensy: {} {}".format(leds_local, leds_remote))
-    print("Real values:       {} {}".format(touch_local, touch_remote))
+    ser.write("{} {}".format(leds_px_local, leds_px_remote))
+    print("Real values:       {} {}".format(px_local, px_remote))
+    print("Sending to teensy: {} {}".format(leds_px_local, leds_px_remote))
