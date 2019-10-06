@@ -133,12 +133,11 @@ while True:
             px_local = 0
 
     # incoming call
-    if px_local == 0:
-        if px_remote_prev <= REAL_LEN and px_remote > REAL_LEN:  # print 'remote charging detected'
-            music_play("other_sound16")
-        else:
-            if px_remote_prev > px_remote:
-                music_stop()
+    if px_remote_prev <= REAL_LEN and px_remote > REAL_LEN:  # print 'remote charging detected'
+        music_play("other_sound16")
+    else:
+        if px_remote_prev > px_remote and px_local == 0:
+            music_stop()
 
     #RAINBOW
     if (px_remote == px_local == PIXEL_COUNT):
