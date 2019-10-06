@@ -172,4 +172,5 @@ while True:
     remote_touch = 0 if remoteTouchCount < REAL_LEN else remoteTouchCount - REAL_LEN
 
     ser.write("{} {}".format(local_touch, remote_touch))
-    print("{} {}".format(local_touch, remote_touch))
+    print("Sending to teensy: {} {}".format(local_touch, remote_touch))
+    print("Real values:       {} {}".format(touchCount, remoteTouchCount))
