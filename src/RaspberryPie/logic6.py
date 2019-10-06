@@ -50,8 +50,6 @@ except IOError as e:
 
 print("Initialized. Tree number is: ", TREE_ID_LOCAL)
 
-music_play("match1")
-
 
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
@@ -107,6 +105,8 @@ def music_play(track):
 
 def music_stop():
     pygame.mixer.music.fadeout(2000)
+    
+music_play("match1")
 
 
 while True:
