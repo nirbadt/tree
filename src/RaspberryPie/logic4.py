@@ -298,16 +298,15 @@ while True:
     # send_message(touchCount)
     # global remoteTouchCount
 
-    REAL_LEN = PIXEL_COUNT / 2
+    REAL_LEN = PIXEL_COUNT // 2
 
-    # ledsTouchCount = touchCount - 1 if touchCount < REAL_LEN else REAL_LEN
-
-    if touchCount < REAL_LEN:
-        ledsTouchCount = touchCount - 1
-    elif touchCount == REAL_LEN:
-        ledsTouchCount = REAL_LEN - 1
-    elif ledsTouchCount == PIXEL_COUNT:
+    ledsTouchCount = touchCount
+        
+    if touchCount == PIXEL_COUNT:
         ledsTouchCount = REAL_LEN
+        print("local is ready for rainbow")
+    elif touchCount >= REAL_LEN:
+        ledsTouchCount = REAL_LEN - 1
 
     ledsRemoteTouchCount = (
         remoteTouchCount - REAL_LEN) if remoteTouchCount > REAL_LEN else 0

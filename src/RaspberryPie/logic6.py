@@ -96,6 +96,7 @@ t2 = threading.Thread(target=blynk_thread)
 t2.daemon = True
 t2.start()
 
+
 def music_play(track):
     pygame.mixer.music.stop()
     pygame.mixer.music.load("/home/pi/tree/sounds/" + track + ".wav")
@@ -156,8 +157,12 @@ while True:
     last_touched = touched
     last_remoteTouchCount = remoteTouchCount
 
-    local_touch = touchCount if touchCount < REAL_LEN else REAL_LEN
-    # remote_touch = (remoteTouchCount - REAL_LEN ) if remoteTouchCount > REAL_LEN  else 0
+    local_touch = touchCount
+    if touchCount == PIXEL_COUNT:
+        local_touch = REAL_LEN
+    elif touchCount >= REAL_LEN:
+        local_touch = REAL_LEN - 1
+
     remote_touch = 0 if remoteTouchCount < REAL_LEN else remoteTouchCount - REAL_LEN
 
     ser.write("{} {}".format(local_touch, remote_touch))
