@@ -52,7 +52,6 @@ blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
 
 print("Initialized. Tree number is: " + str(TREE_ID) + "\n")
 
-
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
     if TREE_ID == 0:
@@ -105,6 +104,13 @@ def music_play(track):
 
 def music_stop():
     pygame.mixer.music.fadeout(2000)
+    
+    
+try:
+  print(blynk.log)
+except:
+    print("blynk.log is not printable")
+
 
 
 while True:
