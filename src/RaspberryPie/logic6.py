@@ -50,9 +50,7 @@ except IOError as e:
 
 print("Initialized. Tree number is: ", TREE_ID_LOCAL)
 
-
-pygame.mixer.music.load("match1.wav")
-pygame.mixer.music.play()
+music_play("match1")
 
 
 @blynk.VIRTUAL_WRITE(0)
