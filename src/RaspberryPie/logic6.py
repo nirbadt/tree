@@ -23,16 +23,16 @@ SERIAL_PORT = '/dev/ttyACM0'
 BLYNK_AUTH = 'ac4b8c5b7ece4a23b60e62733cf6d6fc'
 
 host_name = str(subprocess.check_output(['hostname']))
-TREE_ID = 0 if 'papa' in host_name else 1
-OTHER_TREE_ID = TREE_ID ^ 1
+TREE_ID_LOCAL = 0 if 'papa' in host_name else 1
+TREE_ID_REMOTE = TREE_ID_LOCAL ^ 1
 
 
-touchCount = 0
-remoteTouchCount = 0
+touch_local = 0
+touch_remote = 0
 
-last_touched = False
-last_remoteTouchCount = 0
-inWinningState = False
+touch_state_prev = False
+touch_remote_prev = 0
+RAINBOW = False
 
 print('initializing')
 ser = serial.Serial(SERIAL_PORT)
@@ -50,30 +50,31 @@ if not cap.begin(busnum=1):
 blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
 
 
-print("Initialized. Tree number is: " + str(TREE_ID) + "\n")
+print("Initialized. Tree number is: " + str(TREE_ID_LOCAL) + "\n")
 
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
-    if TREE_ID == 0:
-        global remoteTouchCount
-        remoteTouchCount = int(value)
-        #print("V0 Got value: " + remoteTouchCount + "\n")
+    if TREE_ID_LOCAL == 0:
+        global touch_remote
+        touch_remote = int(value)
+        #print("V0 Got value: " + touch_remote + "\n")
 
 
 @blynk.VIRTUAL_WRITE(1)
 def v1_write_handler(value):
-    if TREE_ID == 1:
-        global remoteTouchCount
-        remoteTouchCount = int(value)
-        #print("V1 Got value: " + remoteTouchCount + "\n")
+    if TREE_ID_LOCAL == 1:
+        global touch_remote
+        touch_remote = int(value)
+        #print("V1 Got value: " + touch_remote + "\n")
 
 
 def publish_touch_count():
     while True:
-        # global touchCount
-        call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +
-              "/update/V{0}?value={1}".format(OTHER_TREE_ID, touchCount)])
-
+        try:
+            call(["curl", "http://139.59.206.133/" + BLYNK_AUTH +  "/update/V{0}?value={1}".format(TREE_ID_REMOTE, touch_local)])
+        except Exception as ex:
+            print(ex)
+       
         time.sleep(0.5)
 
 
@@ -116,61 +117,60 @@ except:
 while True:
     time.sleep(0.05)
 
-    touched = cap.is_touched(0)
+    touch_state = cap.is_touched(0)
 
-    if touched:
-        if last_touched == False:  # print 'local charging started'
+    if touch_state:
+        if touch_state_prev == False:  # print 'local charging started'
             music_play("my_sound16")
 
-        touchCount = touchCount + GROWING_SPEED
-        if touchCount > PIXEL_COUNT:
-            touchCount = PIXEL_COUNT
+        touch_local = touch_local + GROWING_SPEED
+        if touch_local > PIXEL_COUNT:
+            touch_local = PIXEL_COUNT
     else:
-        if last_touched == True:  # print 'local charging stopped'
+        if touch_state_prev == True:  # print 'local charging stopped'
             music_play("my_sound16_reversed2")
 
-        if touchCount > 0 and touchCount <= SHRINKING_SPEED:  # print 'local discharging ended'
+        if touch_local > 0 and touch_local <= SHRINKING_SPEED:  # print 'local discharging ended'
             music_stop()
 
-        touchCount = touchCount - SHRINKING_SPEED
-        if touchCount <= 0:
-            touchCount = 0
+        touch_local = touch_local - SHRINKING_SPEED
+        if touch_local < 0:
+            touch_local = 0
 
     # other end incoming sound handling:
     # give preference to local interaction over remote interaction
-    if touchCount == 0:
-
-        if last_remoteTouchCount == 0 and remoteTouchCount > 0:  # print 'remote charging detected'
+    if touch_local == 0:
+        if touch_remote_prev == 0 and touch_remote > 0:  # print 'remote charging detected'
             music_play("other_sound16")
         else:
-            if last_remoteTouchCount > remoteTouchCount:
+            if touch_remote_prev > touch_remote:
                 music_stop()
 
     # handle winning state
-    if (remoteTouchCount == PIXEL_COUNT and touchCount == PIXEL_COUNT):
-        if inWinningState == False:
+    if (touch_remote == PIXEL_COUNT and touch_local == PIXEL_COUNT):
+        if RAINBOW == False:
             music_play("both_sound16")
-            inWinningState = True
+            RAINBOW = True
     else:
-        inWinningState = False
+        RAINBOW = False
 
-    if last_remoteTouchCount == PIXEL_COUNT and remoteTouchCount < PIXEL_COUNT:
-        if touchCount == 0:
+    if touch_remote_prev == PIXEL_COUNT and touch_remote < PIXEL_COUNT:
+        if touch_local == 0:
             music_stop()
         else:
             music_play("my_sound16")
 
-    last_touched = touched
-    last_remoteTouchCount = remoteTouchCount
+    touch_state_prev = touch_state
+    touch_remote_prev = touch_remote
 
-    local_touch = touchCount
-    if touchCount == PIXEL_COUNT:
-        local_touch = REAL_LEN
-    elif touchCount >= REAL_LEN:
-        local_touch = REAL_LEN - 1
+    leds_local = touch_local
+    if touch_local == PIXEL_COUNT:
+        leds_local = REAL_LEN
+    elif touch_local >= REAL_LEN:
+        leds_local = REAL_LEN - 1
 
-    remote_touch = 0 if remoteTouchCount < REAL_LEN else remoteTouchCount - REAL_LEN
+    leds_remote = 0 if touch_remote < REAL_LEN else touch_remote - REAL_LEN
 
-    ser.write("{} {}".format(local_touch, remote_touch))
-    print("Sending to teensy: {} {}".format(local_touch, remote_touch))
-    print("Real values:       {} {}".format(touchCount, remoteTouchCount))
+    ser.write("{} {}".format(leds_local, leds_remote))
+    print("Sending to teensy: {} {}".format(leds_local, leds_remote))
+    print("Real values:       {} {}".format(touch_local, touch_remote))
