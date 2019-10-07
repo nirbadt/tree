@@ -31,6 +31,7 @@ px_local = 0
 px_remote = 0
 px_remote_prev = 0
 
+touch_state = False
 touch_state_prev = False
 RAINBOW = False
 
@@ -87,7 +88,15 @@ def blynk_thread():
             message = template.format(type(ex).__name__, ex.args)
             print(message)
 
-
+def read_touch_state():
+    global touch_state
+    while True:
+        touch_state = cap.is_touched(0)
+        if touch_state is not touch_state_prev:
+            print("Touch state:", touch_state)
+        time.sleep(0.2)
+    
+    
 t1 = threading.Thread(target=publish_touch_count)
 t1.daemon = True
 t1.start()
@@ -95,6 +104,10 @@ t1.start()
 t2 = threading.Thread(target=blynk_thread)
 t2.daemon = True
 t2.start()
+
+t3 = threading.Thread(target=read_touch_state)
+t3.daemon = True
+t3.start()
 
 
 def music_play(track):
@@ -112,7 +125,6 @@ music_play("match1")
 while True:
     time.sleep(0.05)
 
-    touch_state = cap.is_touched(0)
 
     if touch_state:
         if touch_state_prev == False:  # print 'local charging started'

@@ -58,8 +58,8 @@ void setup() {
   Serial.println("Ready. your indices are my command. or maybe the other way around. ~~~");
 }
 
-int localVirtualEffectIndex = 0;
-int remoteVirtualEffectIndex = 0;
+int localEffect = 0;
+int remoteIndex = 0;
 
 void loop() {
   for (int i = 0; i < LED_CHANNELS; ++i) {
@@ -71,8 +71,8 @@ void loop() {
         updateLocalVirtualPixelColor(i, strips[0].Color(0,255,255));//Cyan 
         // updateLocalVirtualPixelColor(i, strips[0].Color(255,0,255));//Magenta 
       }
-      int localStart = constrain(localVirtualEffectIndex - RING_WIDTH / 2, 0, _local);
-      int localEnd = constrain(localVirtualEffectIndex + RING_WIDTH / 2, 0, _local);
+      int localStart = constrain(localEffect - RING_WIDTH / 2, 0, _local);
+      int localEnd = constrain(localEffect + RING_WIDTH / 2, 0, _local);
       for (int i = localStart ; i < localEnd ; ++i) {
         int intensity = constrain((i - localStart) * 10, 0, 255);
         updateLocalVirtualPixelColor(i, strips[0].Color(intensity, intensity, intensity));
@@ -84,8 +84,8 @@ void loop() {
         // updateLocalVirtualPixelColor(i, strips[0].Color(0,255,255));//Cyan 
         updateRemoteVirtualPixelColor(i, strips[0].Color(255, 0, 255)); //Magenta 
       }
-      int remoteStart = constrain(remoteVirtualEffectIndex - RING_WIDTH / 2, 0, _remote);
-      int remoteEnd = constrain(remoteVirtualEffectIndex + RING_WIDTH / 2, 0, _remote);
+      int remoteStart = constrain(remoteIndex - RING_WIDTH / 2, 0, _remote);
+      int remoteEnd = constrain(remoteIndex + RING_WIDTH / 2, 0, _remote);
       for (int i = remoteStart ; i < remoteEnd ; ++i) {
         int intensity = constrain(((i - remoteStart) < RING_WIDTH / 2) ? (i - remoteStart) * 10 : 255 - (i - remoteStart) * 10, 0, 255);
         // Serial.print(String(intensity) + "\t");
@@ -100,8 +100,8 @@ void loop() {
       strips[STRIP_OUTGOING].show();
 
       if (effectCounter++ % 3 == 0) {
-        localVirtualEffectIndex = (localVirtualEffectIndex + 1) % _local;
-        remoteVirtualEffectIndex = (remoteVirtualEffectIndex + 1) % _remote;
+        localEffect = (localEffect + 1) % _local;
+        remoteIndex = (remoteIndex + 1) % _remote;
       }
     }
   }
