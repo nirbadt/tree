@@ -176,6 +176,12 @@ while True:
 
     leds_px_remote = 0 if px_remote < REAL_LEN else px_remote - REAL_LEN
 
-    ser.write("{} {}".format(leds_px_local, leds_px_remote))
+    try:
+        ser.write("{} {}".format(leds_px_local, leds_px_remote))
+    except IOError as e:
+        print("teensy is unavailable.")
+        print(e)
+        exit
+        
     # print("Real values:       {} {}".format(px_local, px_remote))
     # print("Sending to teensy: {} {}".format(leds_px_local, leds_px_remote))
