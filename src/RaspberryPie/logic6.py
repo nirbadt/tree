@@ -107,12 +107,9 @@ def ping_JBL():
     while True:
         time.sleep(300)
         if pygame.mixer.music.get_busy() == False:
-            volume = pygame.mixer.music.get_volume
-            pygame.mixer.music.set_volume(0.1)
-            music_play("match1")
+            music_play("keep_alive_sound")
             time.sleep(1)
             music_stop()
-            pygame.mixer.music.set_volume(volume)
             
     
 t1 = threading.Thread (target=publish_touch_count)
