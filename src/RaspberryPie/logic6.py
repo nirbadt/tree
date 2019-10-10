@@ -103,18 +103,37 @@ def read_touch_state():
             
         time.sleep(0.1)
     
+def ping_JBL():
+    while True:
+        time.sleep(300)
+        if pygame.mixer.music.get_busy() == False:
+            volume = pygame.mixer.music.get_volume
+            pygame.mixer.music.set_volume(0.1)
+            music_play("match1")
+            time.sleep(1)
+            music_stop()
+            pygame.mixer.music.set_volume(volume)
+            
     
-t1 = threading.Thread(target=publish_touch_count)
+t1 = threading.Thread (target=publish_touch_count)
 t1.daemon = True
 t1.start()
+t1.join()
 
 t2 = threading.Thread(target=blynk_thread)
 t2.daemon = True
 t2.start()
+t2.join()
 
 t3 = threading.Thread(target=read_touch_state)
 t3.daemon = True
 t3.start()
+t3.join()
+
+jbl = threading.Thread(target=ping_JBL)
+jbl.daemon = True
+jbl.start()
+jbl.join()
 
 
 def music_play(track):
