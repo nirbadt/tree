@@ -10,7 +10,7 @@ import pygame
 from subprocess import call
 
 
-PIXEL_COUNT = 480
+PIXEL_COUNT = 500
 GROWING_SPEED = 6
 SHRINKING_SPEED = 6
 
@@ -91,10 +91,17 @@ def blynk_thread():
 def read_touch_state():
     global touch_state
     while True:
-        touch_state = cap.is_touched(0)
-        if touch_state is not touch_state_prev:
-            print("Touch state:", touch_state)
-        time.sleep(0.2)
+        temp_touch_state = cap.is_touched(0)
+        
+        if temp_touch_state != touch_state_prev:
+            time.sleep(0.5)
+            
+            if temp_touch_state == cap.is_touched(0):
+                #state is not changed in last 0.5s, so it counts
+                print("Touch state:", touch_state)
+                touch_state = temp_touch_state
+            
+        time.sleep(0.1)
     
     
 t1 = threading.Thread(target=publish_touch_count)
@@ -143,6 +150,9 @@ while True:
         px_local = px_local - SHRINKING_SPEED
         if px_local < 0:
             px_local = 0
+            
+            
+    
 
     # incoming call
     if px_remote_prev <= REAL_LEN and px_remote > REAL_LEN:  # print 'remote charging detected'

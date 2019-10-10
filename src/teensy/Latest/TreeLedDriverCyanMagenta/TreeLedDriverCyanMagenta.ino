@@ -1,7 +1,7 @@
 #include <WS2812FX.h>
 
 #define LED_CHANNELS 5
-#define STRIP_LEN 240
+#define STRIP_LEN 250
 
 #define RING 0
 #define FINGERS 1
