@@ -49,15 +49,24 @@ except IOError as e:
     exit
     
 
-print("Initialized. Tree number is: ", TREE_ID_LOCAL)
+print("Initialized. Tree number is:", TREE_ID_LOCAL)
 
+def music_play(track):
+    pygame.mixer.music.stop()
+    pygame.mixer.music.load("/home/pi/tree/sounds/" + track + ".wav")
+    pygame.mixer.music.play()
+
+
+def music_stop():
+    pygame.mixer.music.fadeout(2000)
+
+print("starting blynk functions")
 
 @blynk.VIRTUAL_WRITE(0)
 def v0_write_handler(value):
     if TREE_ID_LOCAL == 0:
         global px_remote
         px_remote = int(value)
-        #print("V0 Got value: " + px_remote + "\n")
 
 
 @blynk.VIRTUAL_WRITE(1)
@@ -65,9 +74,9 @@ def v1_write_handler(value):
     if TREE_ID_LOCAL == 1:
         global px_remote
         px_remote = int(value)
-        #print("V1 Got value: " + px_remote + "\n")
 
 
+print("blynk functions started")
 def publish_touch_count():
     while True:
         try:
@@ -111,7 +120,7 @@ def ping_JBL():
             time.sleep(1)
             music_stop()
             
-    
+print("starting threads")
 t1 = threading.Thread (target=publish_touch_count)
 t1.daemon = True
 t1.start()
@@ -132,18 +141,9 @@ jbl.daemon = True
 jbl.start()
 jbl.join()
 
-
-def music_play(track):
-    pygame.mixer.music.stop()
-    pygame.mixer.music.load("/home/pi/tree/sounds/" + track + ".wav")
-    pygame.mixer.music.play()
-
-
-def music_stop():
-    pygame.mixer.music.fadeout(2000)
-    
 music_play("match1")
 
+print("starting main loop")
 
 while True:
     time.sleep(0.05)
