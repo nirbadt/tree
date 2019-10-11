@@ -67,3 +67,5 @@ scp -r /Users/nirbadt/projects/tree/src/RaspberryPie pi@192.168.1.106:/home/pi/t
 git clone -b continuous-call https://github.com/nirbadt/tree.git / clones git repo specific branch
 sudo reboot -h now
 sudo shutdown -h now
+sudo killall python /kill all running python scripts
+
