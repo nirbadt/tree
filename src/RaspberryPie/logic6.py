@@ -183,7 +183,7 @@ while True:
     if px_remote_prev == PIXEL_COUNT and px_remote < PIXEL_COUNT:
         if px_local == 0 or px_local == PIXEL_COUNT:
             music_stop()
-        else:
+        elif pygame.mixer.music.get_busy == False:
             music_play("my_sound16")
 
     touch_state_prev = touch_state
