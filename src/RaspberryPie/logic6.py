@@ -11,8 +11,8 @@ from subprocess import call
 
 
 PIXEL_COUNT = 600
-GROWING_SPEED = 3
-SHRINKING_SPEED = 6
+GROWING_SPEED = 2
+SHRINKING_SPEED = 4
 
 CHARGE_RELEASE_TIME = 0.5
 CHARGE_TIME = 7
@@ -141,7 +141,7 @@ music_play("match1")
 print("starting main loop")
 
 while True:
-    time.sleep(0.035)
+    time.sleep(0.005)
 
 
     if touch_state:
