@@ -60,7 +60,7 @@ https://docs.google.com/spreadsheets/d/175IhOrYseiRWdDT4lwTgxA61GhVt3Ul3eON0_b8m
 ### Definiton document
 https://drive.google.com/drive/u/0/folders/1VJmJFb3NY0qjUHO7iE7arsCX7nPm9Nrt
 
-####important commands
+#### important commands
 ssh pi@192.168.1.106 - Access Papa tree (Magenta)
 ssh pi@192.168.1.107 - Access Baby tree (Cyan)
 scp -r /Users/nirbadt/projects/tree/src/RaspberryPie pi@192.168.1.106:/home/pi/tree - copy files to Pi
