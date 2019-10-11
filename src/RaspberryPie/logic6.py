@@ -10,8 +10,8 @@ import pygame
 from subprocess import call
 
 
-PIXEL_COUNT = 500
-GROWING_SPEED = 6
+PIXEL_COUNT = 600
+GROWING_SPEED = 3
 SHRINKING_SPEED = 6
 
 CHARGE_RELEASE_TIME = 0.5
@@ -107,7 +107,6 @@ def read_touch_state():
             
             if temp_touch_state == cap.is_touched(0):
                 #state is not changed in last 0.5s, so it counts
-                print("Touch state:", touch_state)
                 touch_state = temp_touch_state
             
         time.sleep(0.1)
@@ -124,22 +123,18 @@ print("starting threads")
 t1 = threading.Thread (target=publish_touch_count)
 t1.daemon = True
 t1.start()
-t1.join()
 
 t2 = threading.Thread(target=blynk_thread)
 t2.daemon = True
 t2.start()
-t2.join()
 
 t3 = threading.Thread(target=read_touch_state)
 t3.daemon = True
 t3.start()
-t3.join()
 
 jbl = threading.Thread(target=ping_JBL)
 jbl.daemon = True
 jbl.start()
-jbl.join()
 
 music_play("match1")
 
