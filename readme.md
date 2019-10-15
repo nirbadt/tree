@@ -72,5 +72,5 @@ sudo killall python //kill all running python scripts
 scp -r /Users/nirbadt/projects/tree/src/RaspberryPie pi@192.168.1.106:/home/pi/tree //copy files to Pi  
 git clone -b continuous-call https://github.com/nirbadt/tree.git // clones git repo specific branch  
 git pull https://github.com/nirbadt/tree.git continuous-call //updates code  
-
+sudo python /home/pi/tree/RaspberryPie/logic6.py //runs program
 Dataplicity Password - twotrees
