@@ -59,5 +59,17 @@ https://docs.google.com/spreadsheets/d/175IhOrYseiRWdDT4lwTgxA61GhVt3Ul3eON0_b8m
 
 ### Definiton document
 https://drive.google.com/drive/u/0/folders/1VJmJFb3NY0qjUHO7iE7arsCX7nPm9Nrt
+## 11/10/2019
+San diego version, added contonious call interaction and made a ton of changes.
+Logic6.py is the file we work with, under contonuious-call branch.
 
+### important commands
+ssh pi@192.168.1.106 // Access Papa tree (Magenta)  
+ssh pi@192.168.1.107 // Access Baby tree (Cyan)  
+sudo reboot -h now  //reboots
+sudo shutdown -h now //shutdowns properly  
+sudo killall python //kill all running python scripts  
+scp -r /Users/nirbadt/projects/tree/src/RaspberryPie pi@192.168.1.106:/home/pi/tree //copy files to Pi  
+git clone -b continuous-call https://github.com/nirbadt/tree.git // clones git repo specific branch  
+git pull https://github.com/nirbadt/tree.git continuous-call //updates code  
 

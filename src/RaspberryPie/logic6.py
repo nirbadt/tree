@@ -54,7 +54,7 @@ print("Initialized. Tree number is:", TREE_ID_LOCAL)
 
 def music_play(track):
     pygame.mixer.music.stop()
-    pygame.mixer.music.load("/home/pi/tree/sounds/" + track + ".wav")
+    pygame.mixer.music.load("/home/pi/tree/" + track + ".wav")
     pygame.mixer.music.play()
 
 
