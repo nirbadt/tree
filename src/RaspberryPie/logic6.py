@@ -40,6 +40,7 @@ try:
     ser = serial.Serial(SERIAL_PORT)
     ser.baudrate = 115200
     pygame.mixer.init()
+    pygame.mixer.music.play(-1)
     cap = MPR121.MPR121()
     cap.begin(busnum=1)
     blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
