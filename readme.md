@@ -73,3 +73,4 @@ scp -r /Users/nirbadt/projects/tree/src/RaspberryPie pi@192.168.1.106:/home/pi/t
 git clone -b continuous-call https://github.com/nirbadt/tree.git // clones git repo specific branch  
 git pull https://github.com/nirbadt/tree.git continuous-call //updates code  
 
+Dataplicity Password - twotrees
