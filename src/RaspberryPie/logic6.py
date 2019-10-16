@@ -142,7 +142,7 @@ music_play("match1")
 print("starting main loop")
 
 while True:
-    time.sleep(0.05)
+    time.sleep(0.03)
 
 
     if touch_state:
