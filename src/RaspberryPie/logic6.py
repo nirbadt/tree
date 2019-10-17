@@ -9,6 +9,10 @@ import pygame
 
 from subprocess import call
 
+TOUCH_DEBUG = True
+LEVEL_TOUCH = 100
+LEVEL_RELEASE = 255
+
 
 PIXEL_COUNT = 600
 GROWING_SPEED = 3
@@ -40,9 +44,11 @@ try:
     ser = serial.Serial(SERIAL_PORT)
     ser.baudrate = 115200
     pygame.mixer.init()
-    #pygame.mixer.music.play(-1)
+    
     cap = MPR121.MPR121()
     cap.begin(busnum=1)
+    # cap.set_threesholds(LEVEL_TOUCH, LEVEL_RELEASE)
+
     blynk = BlynkLib.Blynk(BLYNK_AUTH, server='139.59.206.133')
 except IOError as e:
     print("Hardware init failure")
@@ -140,6 +146,9 @@ jbl.start()
 music_play("match1")
 
 print("starting main loop")
+
+if TOUCH_DEBUG:
+    print(cap.filtered_data(0))
 
 while True:
     time.sleep(0.03)
