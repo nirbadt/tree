@@ -151,7 +151,7 @@ if TOUCH_DEBUG:
     print(cap.filtered_data(0))
 
 while True:
-    time.sleep(0.03)
+    time.sleep(0.022)
 
 
     if touch_state:
