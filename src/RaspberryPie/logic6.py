@@ -9,9 +9,9 @@ import pygame
 
 from subprocess import call
 
-TOUCH_DEBUG = True
-LEVEL_TOUCH = 100
-LEVEL_RELEASE = 255
+TOUCH_DEBUG = False
+#LEVEL_TOUCH = 100
+#LEVEL_RELEASE = 255
 
 
 PIXEL_COUNT = 600
